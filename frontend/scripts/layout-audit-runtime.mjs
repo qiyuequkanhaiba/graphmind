@@ -1,4 +1,114 @@
+import { spawn, spawnSync } from "node:child_process";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+export const CHROME_START_ATTEMPTS = 2;
 export const WORKBENCH_NAVIGATION_ATTEMPTS = 2;
+
+export async function launchChrome({
+  chromePath = findChromeExecutable(),
+  createUserDataDir = (prefix) => mkdtempSync(join(tmpdir(), prefix)),
+  profilePrefix,
+  removeUserDataDir = removeDirectory,
+  spawnChrome = spawnChromeProcess,
+  startAttempts = CHROME_START_ATTEMPTS,
+  startupTimeoutMs = 30000,
+  stopChrome = stopProcess
+}) {
+  const failures = [];
+
+  for (let attempt = 1; attempt <= startAttempts; attempt += 1) {
+    const userDataDir = createUserDataDir(profilePrefix);
+    const args = createChromeArgs(userDataDir);
+    const chrome = spawnChrome(chromePath, args);
+
+    try {
+      const chromeEndpoint = await waitForChromeDevTools(chrome, startupTimeoutMs);
+      return { chrome, chromeEndpoint, userDataDir };
+    } catch (error) {
+      const stopped = await stopChrome(chrome);
+      const profileRemoved = stopped ? removeUserDataDir(userDataDir) : false;
+      failures.push({
+        attempt,
+        error: error instanceof Error ? error.message : String(error),
+        chromeStopped: stopped,
+        profileRemoved
+      });
+      if (!stopped) {
+        break;
+      }
+      if (attempt < startAttempts) {
+        console.warn(`Chrome startup retry: attempt=${attempt}`);
+      }
+    }
+  }
+
+  throw new Error(
+    `Chrome failed to expose its DevTools endpoint after ${failures.length} attempt(s): ${JSON.stringify(failures)}`
+  );
+}
+
+export function createChromeArgs(userDataDir) {
+  return [
+    "--headless=new",
+    "--remote-debugging-port=0",
+    `--user-data-dir=${userDataDir}`,
+    "--disable-background-networking",
+    "--disable-default-apps",
+    "--disable-dev-shm-usage",
+    "--disable-extensions",
+    "--disable-gpu",
+    "--disable-sync",
+    "--hide-scrollbars",
+    "--no-default-browser-check",
+    "--no-first-run",
+    "--window-size=1440,900",
+    "about:blank"
+  ];
+}
+
+export function findChromeExecutable() {
+  const explicitPath = process.env.CHROME_PATH;
+  if (explicitPath && existsSync(explicitPath)) {
+    return explicitPath;
+  }
+
+  const macCandidates = [
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+    "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
+  ];
+  const foundMacPath = macCandidates.find((candidate) => existsSync(candidate));
+  if (foundMacPath) {
+    return foundMacPath;
+  }
+
+  for (const command of ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser"]) {
+    const result = spawnSync("which", [command], { encoding: "utf8" });
+    if (result.status === 0 && result.stdout.trim()) {
+      return result.stdout.trim();
+    }
+  }
+
+  throw new Error("Chrome or Chromium was not found. Set CHROME_PATH to run browser checks.");
+}
+
+export function removeDirectory(path) {
+  try {
+    rmSync(path, {
+      force: true,
+      maxRetries: 5,
+      recursive: true,
+      retryDelay: 120
+    });
+    return true;
+  } catch (error) {
+    console.warn(`Could not remove temporary directory ${path}: ${error.message}`);
+    return false;
+  }
+}
 
 export async function navigateToWorkbench({
   appUrl,
@@ -31,6 +141,11 @@ export async function navigateToWorkbench({
       failures.push({
         attempt,
         consoleIssueCount: consoleIssues.length,
+        consoleIssues: consoleIssues.slice(0, 5).map(({ level, source, text }) => ({
+          level,
+          source,
+          text
+        })),
         diagnostics,
         error: error instanceof Error ? error.message : String(error),
         phase
@@ -90,6 +205,56 @@ export async function stopProcess(
   const forcedExit = waitForExit(childProcess, forceTimeoutMs);
   childProcess.kill("SIGKILL");
   return forcedExit;
+}
+
+function spawnChromeProcess(chromePath, args) {
+  return spawn(chromePath, args, { stdio: ["ignore", "ignore", "pipe"] });
+}
+
+function waitForChromeDevTools(chrome, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    let stderr = "";
+    const finish = (callback, value) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      clearTimeout(timeout);
+      chrome.off("error", onError);
+      chrome.off("exit", onExit);
+      chrome.stderr.off("data", onStderr);
+      callback(value);
+    };
+    const onError = (error) => {
+      finish(reject, new Error(`Chrome process failed to start: ${error.message}\n${stderr}`));
+    };
+    const onExit = (code, signal) => {
+      finish(
+        reject,
+        new Error(
+          `Chrome exited before DevTools became available. Exit code: ${code} Signal: ${signal}\n${stderr}`
+        )
+      );
+    };
+    const onStderr = (chunk) => {
+      stderr = (stderr + String(chunk)).slice(-12000);
+      const match = stderr.match(/DevTools listening on (ws:\/\/[^\s]+)/);
+      if (match) {
+        finish(resolve, match[1]);
+      }
+    };
+    const timeout = setTimeout(() => {
+      finish(
+        reject,
+        new Error(`Timed out waiting for Chrome DevTools endpoint after ${timeoutMs}ms.\n${stderr}`)
+      );
+    }, timeoutMs);
+
+    chrome.once("error", onError);
+    chrome.once("exit", onExit);
+    chrome.stderr.on("data", onStderr);
+  });
 }
 
 function waitForExit(childProcess, timeoutMs) {

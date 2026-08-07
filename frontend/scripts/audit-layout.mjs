@@ -1,10 +1,13 @@
-import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
-import { navigateToWorkbench, stopProcess } from "./layout-audit-runtime.mjs";
+import {
+  launchChrome,
+  navigateToWorkbench,
+  removeDirectory,
+  stopProcess
+} from "./layout-audit-runtime.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const frontendRoot = resolve(__dirname, "..");
@@ -52,7 +55,6 @@ let viteServer;
 let chrome;
 let chromeUserDataDir;
 let cdp;
-let consoleIssueCollector;
 
 async function createViteServer() {
   const server = await createServer({
@@ -66,78 +68,6 @@ async function createViteServer() {
   });
   await server.listen();
   return server;
-}
-
-async function launchChrome() {
-  const chromePath = findChromeExecutable();
-  chromeUserDataDir = mkdtempSync(join(tmpdir(), "graphmind-layout-audit-"));
-  chrome = spawn(
-    chromePath,
-    [
-      "--headless=new",
-      "--remote-debugging-port=0",
-      `--user-data-dir=${chromeUserDataDir}`,
-      "--disable-background-networking",
-      "--disable-default-apps",
-      "--disable-extensions",
-      "--disable-gpu",
-      "--disable-sync",
-      "--hide-scrollbars",
-      "--no-default-browser-check",
-      "--no-first-run",
-      "--window-size=1440,900",
-      "about:blank"
-    ],
-    { stdio: ["ignore", "ignore", "pipe"] }
-  );
-
-  return new Promise((resolve, reject) => {
-    let stderr = "";
-    const timeout = setTimeout(() => {
-      reject(new Error(`Timed out waiting for Chrome DevTools endpoint.\n${stderr}`));
-    }, 15000);
-
-    chrome.once("exit", (code) => {
-      clearTimeout(timeout);
-      reject(new Error(`Chrome exited before DevTools became available. Exit code: ${code}\n${stderr}`));
-    });
-
-    chrome.stderr.on("data", (chunk) => {
-      stderr += String(chunk);
-      const match = stderr.match(/DevTools listening on (ws:\/\/[^\s]+)/);
-      if (match) {
-        clearTimeout(timeout);
-        resolve(match[1]);
-      }
-    });
-  });
-}
-
-function findChromeExecutable() {
-  const explicitPath = process.env.CHROME_PATH;
-  if (explicitPath && existsSync(explicitPath)) {
-    return explicitPath;
-  }
-
-  const macCandidates = [
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-    "/Applications/Chromium.app/Contents/MacOS/Chromium",
-    "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
-    "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
-  ];
-  const foundMacPath = macCandidates.find((candidate) => existsSync(candidate));
-  if (foundMacPath) {
-    return foundMacPath;
-  }
-
-  for (const command of ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser"]) {
-    const result = spawnSync("which", [command], { encoding: "utf8" });
-    if (result.status === 0 && result.stdout.trim()) {
-      return result.stdout.trim();
-    }
-  }
-
-  throw new Error("Chrome or Chromium was not found. Set CHROME_PATH to run the layout audit.");
 }
 
 async function auditState({ appUrl, cdp, consoleIssueCollector, sessionId, state, viewport }) {
@@ -1161,44 +1091,55 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function removeDirectory(path) {
-  try {
-    rmSync(path, {
-      force: true,
-      maxRetries: 5,
-      recursive: true,
-      retryDelay: 120
-    });
-  } catch (error) {
-    console.warn(`Could not remove temporary directory ${path}: ${error.message}`);
-  }
-}
-
 async function stopChrome() {
   return stopProcess(chrome);
+}
+
+async function createAuditSession() {
+  const targetId = await cdp
+    .send("Target.createTarget", { url: "about:blank" })
+    .then((result) => result.targetId);
+  const { sessionId } = await cdp.send("Target.attachToTarget", {
+    flatten: true,
+    targetId
+  });
+  const consoleIssueCollector = createConsoleIssueCollector(cdp, sessionId);
+
+  await cdp.send("Runtime.enable", {}, sessionId);
+  await cdp.send("Log.enable", {}, sessionId);
+  await cdp.send("Page.enable", {}, sessionId);
+  await cdp.send(
+    "Page.addScriptToEvaluateOnNewDocument",
+    { source: createApiMockScript() },
+    sessionId
+  );
+
+  return {
+    consoleIssueCollector,
+    sessionId,
+    async close() {
+      consoleIssueCollector.dispose();
+      try {
+        const result = await cdp.send("Target.closeTarget", { targetId });
+        if (result.success === false) {
+          console.warn(`Layout audit target close failed: target=${targetId}`);
+        }
+      } catch (error) {
+        console.warn(`Layout audit target close failed: target=${targetId} error=${error.message}`);
+      }
+    }
+  };
 }
 
 async function main() {
   try {
     viteServer = await createViteServer();
     const appUrl = viteServer.resolvedUrls?.local?.[0] ?? "http://127.0.0.1:5173/";
-    const chromeEndpoint = await launchChrome();
+    const chromeRuntime = await launchChrome({ profilePrefix: "graphmind-layout-audit-" });
+    chrome = chromeRuntime.chrome;
+    chromeUserDataDir = chromeRuntime.userDataDir;
+    const chromeEndpoint = chromeRuntime.chromeEndpoint;
     cdp = await CdpClient.connect(chromeEndpoint);
-    const targetId = await cdp.send("Target.createTarget", { url: "about:blank" }).then((result) => result.targetId);
-    const { sessionId } = await cdp.send("Target.attachToTarget", {
-      flatten: true,
-      targetId
-    });
-    consoleIssueCollector = createConsoleIssueCollector(cdp, sessionId);
-
-    await cdp.send("Runtime.enable", {}, sessionId);
-    await cdp.send("Log.enable", {}, sessionId);
-    await cdp.send("Page.enable", {}, sessionId);
-    await cdp.send(
-      "Page.addScriptToEvaluateOnNewDocument",
-      { source: createApiMockScript() },
-      sessionId
-    );
 
     rmSync(outputDir, { force: true, recursive: true });
     mkdirSync(outputDir, { recursive: true });
@@ -1206,23 +1147,28 @@ async function main() {
     const problems = [];
 
     for (const viewport of VIEWPORTS) {
-      for (const state of STATES) {
-        const result = await auditState({
-          appUrl,
-          cdp,
-          consoleIssueCollector,
-          sessionId,
-          state,
-          viewport
-        });
-        results.push(result);
-        problems.push(
-          ...result.problems.map((problem) => ({
-            ...problem,
-            state: state.name,
-            viewport: viewport.name
-          }))
-        );
+      const auditSession = await createAuditSession();
+      try {
+        for (const state of STATES) {
+          const result = await auditState({
+            appUrl,
+            cdp,
+            consoleIssueCollector: auditSession.consoleIssueCollector,
+            sessionId: auditSession.sessionId,
+            state,
+            viewport
+          });
+          results.push(result);
+          problems.push(
+            ...result.problems.map((problem) => ({
+              ...problem,
+              state: state.name,
+              viewport: viewport.name
+            }))
+          );
+        }
+      } finally {
+        await auditSession.close();
       }
     }
     const consoleIssues = results.flatMap((result) => result.consoleIssues ?? []);
@@ -1269,7 +1215,6 @@ async function main() {
       console.log(`Report: ${join(outputDir, "layout-audit-summary.json")}`);
     }
   } finally {
-    consoleIssueCollector?.dispose();
     cdp?.close();
     const chromeStopped = await stopChrome();
     if (chromeUserDataDir && chromeStopped) {

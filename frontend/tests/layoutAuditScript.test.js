@@ -3,6 +3,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  createChromeArgs,
+  launchChrome,
   navigateToWorkbench,
   stopProcess,
   WORKBENCH_NAVIGATION_ATTEMPTS
@@ -71,8 +73,79 @@ describe("layout audit automation", () => {
     expect(script).toContain("allowedConsoleIssueCount");
     expect(script).toContain("unexpectedConsoleIssueCount");
     expect(script).toContain("navigateToWorkbench");
+    expect(script).toContain("createAuditSession");
+    expect(script).toContain('"Target.closeTarget"');
     expect(script).toContain("await stopChrome()");
     expect(script).toContain("temporary directory was preserved");
+  });
+
+  it("uses CI-safe Chrome flags and retries a failed startup with a clean profile", async () => {
+    const chromeProcesses = [new FakeChromeProcess(), new FakeChromeProcess()];
+    const createdProfiles = [];
+    const removedProfiles = [];
+    const spawnedArgs = [];
+
+    const launching = launchChrome({
+      chromePath: "/fake/chrome",
+      createUserDataDir: (prefix) => {
+        const profile = `/tmp/${prefix}${createdProfiles.length + 1}`;
+        createdProfiles.push(profile);
+        return profile;
+      },
+      profilePrefix: "graphmind-test-",
+      removeUserDataDir: (profile) => removedProfiles.push(profile),
+      spawnChrome: (_path, args) => {
+        spawnedArgs.push(args);
+        const process = chromeProcesses.shift();
+        queueMicrotask(() => {
+          if (spawnedArgs.length === 1) {
+            process.exitCode = 1;
+            process.emit("exit", 1, null);
+          } else {
+            process.stderr.emit("data", "DevTools listening on ws://127.0.0.1:9222/devtools/browser/test");
+          }
+        });
+        return process;
+      },
+      startupTimeoutMs: 20,
+      stopChrome: async () => true
+    });
+
+    const runtime = await launching;
+    expect(runtime).toMatchObject({
+      chromeEndpoint: "ws://127.0.0.1:9222/devtools/browser/test",
+      userDataDir: createdProfiles[1]
+    });
+    expect(createdProfiles).toHaveLength(2);
+    expect(removedProfiles).toEqual([createdProfiles[0]]);
+    expect(spawnedArgs.every((args) => args.includes("--disable-dev-shm-usage"))).toBe(true);
+    expect(createChromeArgs("/tmp/profile")).toContain("--disable-dev-shm-usage");
+  });
+
+  it("does not stack Chrome retries when the failed process remains alive", async () => {
+    let spawnCount = 0;
+    const chrome = new FakeChromeProcess();
+
+    await expect(
+      launchChrome({
+        chromePath: "/fake/chrome",
+        createUserDataDir: () => "/tmp/graphmind-stuck",
+        profilePrefix: "graphmind-test-",
+        removeUserDataDir: () => undefined,
+        spawnChrome: () => {
+          spawnCount += 1;
+          queueMicrotask(() => {
+            chrome.exitCode = 1;
+            chrome.emit("exit", 1, null);
+          });
+          return chrome;
+        },
+        startupTimeoutMs: 20,
+        stopChrome: async () => false
+      })
+    ).rejects.toThrow(/after 1 attempt.*chromeStopped.*false.*profileRemoved.*false/);
+
+    expect(spawnCount).toBe(1);
   });
 
   it("retries Page.navigate error responses with state diagnostics", async () => {
@@ -239,4 +312,8 @@ class FakeChildProcess extends EventEmitter {
     }
     return true;
   }
+}
+
+class FakeChromeProcess extends FakeChildProcess {
+  stderr = new EventEmitter();
 }

@@ -12,6 +12,8 @@ describe("E2E smoke script", () => {
     expect(source).toContain('"Input.dispatchMouseEvent"');
     expect(source).toContain('"Input.insertText"');
     expect(source).toContain('"Input.dispatchKeyEvent"');
+    expect(source).toContain('launchChrome({ profilePrefix: "graphmind-e2e-" })');
+    expect(source).toContain("stopProcess(chrome)");
     expect(source).not.toContain("element.click()");
   });
 
