@@ -23,7 +23,7 @@
     "gsap": "^3.15.0",
     "lucide-react": "^0.468.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react-dom": "^19.2.8",
     "reactflow": "^11.11.4",
     "three": "^0.184.0"
   },
@@ -31,7 +31,7 @@
     "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/react": "^15.0.7",
     "@types/react": "^18.2.79",
-    "@types/react-dom": "^18.2.25",
+    "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.0.2",
     "jsdom": "^24.0.0",
     "typescript": "^5.4.5",
