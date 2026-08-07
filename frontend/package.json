@@ -1,0 +1,41 @@
+{
+  "name": "graphmind-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "audit:layout": "node scripts/audit-layout.mjs",
+    "audit:architecture": "node scripts/audit-architecture.mjs",
+    "audit:quality": "node scripts/audit-quality.mjs",
+    "clean:artifacts": "node scripts/clean-artifacts.mjs",
+    "contract:api": "node scripts/contract-api.mjs",
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc && vite build",
+    "lint:source": "node scripts/lint-source.mjs",
+    "test:e2e": "node scripts/e2e-smoke.mjs",
+    "test": "node scripts/run-vitest.mjs",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "@types/three": "^0.184.1",
+    "gsap": "^3.15.0",
+    "lucide-react": "^0.468.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "reactflow": "^11.11.4",
+    "three": "^0.184.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.5",
+    "@testing-library/react": "^15.0.7",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
+    "@vitejs/plugin-react": "^6.0.2",
+    "jsdom": "^24.0.0",
+    "typescript": "^5.4.5",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
+  }
+}

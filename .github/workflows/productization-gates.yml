@@ -1,0 +1,541 @@
+name: Productization Gates
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    name: Dependency review
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        # v4.2.2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Review dependency changes
+        # v4.7.3
+        uses: actions/dependency-review-action@595b5aeba73380359d98a5e087f648dbb0edce1b
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: always
+
+  backend-gates:
+    name: Backend gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        # v4.2.2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Set up Python
+        # v5.6.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+
+      - name: Set up uv
+        # v6.8.0
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: "0.9.27"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install backend dependencies
+        run: uv sync --frozen --extra dev
+
+      - name: Run URL import safety tests
+        run: uv run --frozen pytest tests/test_url_import_phase_60.py -q
+
+      - name: Run deployment security tests
+        run: uv run --frozen pytest tests/test_deployment_security_phase_p4.py -q
+
+      - name: Run auth, session, and sharing tests
+        run: uv run --frozen pytest tests/test_auth_guardrails_phase_p4.py -q
+
+      - name: Run hosted import worker tests
+        run: uv run --frozen pytest tests/test_import_worker_mode_phase_p4.py -q
+
+      - name: Run review analytics maintenance tests
+        run: uv run --frozen pytest tests/test_review_analytics_maintenance.py -q
+
+      - name: Run TLS ingress tests
+        run: uv run --frozen pytest tests/test_tls_ingress_phase_p4.py -q
+
+      - name: Run backend tests
+        run: uv run --frozen pytest -q
+
+      - name: Run backend coverage
+        run: uv run --frozen pytest --cov=graphmind --cov-report=term-missing --cov-fail-under=70 -q
+
+      - name: Run backend lint
+        run: uv run --frozen ruff check graphmind tests
+
+      - name: Verify OpenAPI contract
+        run: uv run --frozen python scripts/export_openapi_contract.py --check
+
+      - name: Run frontend OpenAPI contract gate
+        working-directory: frontend
+        run: npm run contract:api
+
+  deployment-gates:
+    name: Deployment gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        # v4.2.2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Set up Python
+        # v5.6.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+
+      - name: Set up uv
+        # v6.8.0
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: "0.9.27"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: uv sync --frozen --extra dev
+
+      - name: Prepare deployment gate artifacts
+        run: mkdir -p tmp-deployment-gates
+
+      - name: Reject placeholder deployment credentials
+        run: |
+          set +e
+          backend/.venv/bin/python deploy/graphmind-ops.py preflight \
+            --env-file deploy/.env.production.example \
+            > tmp-deployment-gates/placeholder-preflight.json
+          status=$?
+          set -e
+          test "$status" -eq 1
+
+      - name: Prepare hardened deployment environment
+        run: |
+          cp deploy/.env.production.example /tmp/graphmind-ci.env
+          sed -i "s|^GRAPHMIND_SESSION_SECRET=.*|GRAPHMIND_SESSION_SECRET=$(openssl rand -hex 32)|" /tmp/graphmind-ci.env
+          sed -i "s|^GRAPHMIND_ADMIN_PASSWORD=.*|GRAPHMIND_ADMIN_PASSWORD=$(openssl rand -hex 24)|" /tmp/graphmind-ci.env
+
+      - name: Run deployment preflight
+        run: |
+          set -o pipefail
+          backend/.venv/bin/python deploy/graphmind-ops.py preflight \
+            --env-file /tmp/graphmind-ci.env \
+            --workspace-root /tmp/graphmind-preflight-workspace \
+            --backup-dir /tmp/graphmind-preflight-backups \
+            | tee tmp-deployment-gates/deployment-preflight.json
+
+      - name: Render Compose config
+        env:
+          GRAPHMIND_SERVICE_ENV_FILE: /tmp/graphmind-ci.env
+        run: docker compose -f deploy/docker-compose.yml --env-file /tmp/graphmind-ci.env config --format json > tmp-deployment-gates/compose-config.json
+
+      - name: Render TLS Compose config
+        env:
+          GRAPHMIND_SERVICE_ENV_FILE: /tmp/graphmind-ci.env
+        run: docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.tls.yml --env-file /tmp/graphmind-ci.env config --format json > tmp-deployment-gates/compose-tls-config.json
+
+      - name: Validate Caddy configuration
+        env:
+          GRAPHMIND_SERVICE_ENV_FILE: /tmp/graphmind-ci.env
+        run: docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.tls.yml --env-file /tmp/graphmind-ci.env run --rm --no-deps caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+
+      - name: Verify deployment gate artifacts
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const preflight = JSON.parse(
+            fs.readFileSync("tmp-deployment-gates/deployment-preflight.json", "utf8")
+          );
+          if (preflight.status !== "ready") {
+            throw new Error(`Deployment preflight was not ready: ${preflight.status}`);
+          }
+
+          function requireServices(path, services) {
+            const content = JSON.parse(fs.readFileSync(`tmp-deployment-gates/${path}`, "utf8"));
+            for (const service of services) {
+              if (!content.services?.[service]) {
+                throw new Error(`${path} is missing service ${service}`);
+              }
+            }
+            return content;
+          }
+
+          requireServices("compose-config.json", ["backend", "frontend", "worker"]);
+          const tls = requireServices("compose-tls-config.json", ["backend", "frontend", "worker", "caddy"]);
+          const publishedPorts = Object.values(tls.services).flatMap(
+            (service) => (service.ports || []).map((port) => Number(port.published))
+          );
+          if (publishedPorts.includes(8080) || !publishedPorts.includes(80) || !publishedPorts.includes(443)) {
+            throw new Error(`TLS Compose published unexpected ports: ${publishedPorts.join(", ")}`);
+          }
+          NODE
+
+      - name: Build and start non-TLS Compose deployment
+        env:
+          GRAPHMIND_SERVICE_ENV_FILE: /tmp/graphmind-ci.env
+        run: docker compose -f deploy/docker-compose.yml --env-file /tmp/graphmind-ci.env up -d --build --wait
+
+      - name: Smoke-check non-TLS Compose deployment
+        run: |
+          curl --fail --silent --show-error http://127.0.0.1:8080/healthz
+          curl --fail --silent --show-error \
+            --header "Host: graphmind.example.com" \
+            http://127.0.0.1:8080/api/ready
+
+      - name: Stop non-TLS Compose deployment
+        if: always()
+        env:
+          GRAPHMIND_SERVICE_ENV_FILE: /tmp/graphmind-ci.env
+        run: docker compose -f deploy/docker-compose.yml --env-file /tmp/graphmind-ci.env down --volumes --remove-orphans
+
+      - name: Generate ephemeral TLS certificate
+        run: |
+          mkdir -p tmp-deployment-gates/tls
+          openssl req -x509 -newkey rsa:2048 -sha256 -nodes -days 1 \
+            -subj "/CN=graphmind.example.com" \
+            -addext "subjectAltName=DNS:graphmind.example.com" \
+            -keyout tmp-deployment-gates/tls/graphmind.key \
+            -out tmp-deployment-gates/tls/graphmind.crt
+          awk '
+            { print }
+            /^graphmind\.example\.com \{$/ {
+              print "\ttls /tmp/graphmind-ci-tls/graphmind.crt /tmp/graphmind-ci-tls/graphmind.key"
+            }
+          ' deploy/Caddyfile > tmp-deployment-gates/tls/Caddyfile
+
+      - name: Build and start TLS Compose deployment
+        env:
+          GRAPHMIND_SERVICE_ENV_FILE: /tmp/graphmind-ci.env
+        run: docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.tls.yml --env-file /tmp/graphmind-ci.env up -d --build --wait
+
+      - name: Load ephemeral certificate into Caddy
+        env:
+          GRAPHMIND_SERVICE_ENV_FILE: /tmp/graphmind-ci.env
+        run: |
+          caddy_container=$(docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.tls.yml --env-file /tmp/graphmind-ci.env ps -q caddy)
+          test -n "$caddy_container"
+          docker exec "$caddy_container" mkdir -p /tmp/graphmind-ci-tls
+          docker cp tmp-deployment-gates/tls/graphmind.crt "$caddy_container":/tmp/graphmind-ci-tls/graphmind.crt
+          docker cp tmp-deployment-gates/tls/graphmind.key "$caddy_container":/tmp/graphmind-ci-tls/graphmind.key
+          docker cp tmp-deployment-gates/tls/Caddyfile "$caddy_container":/tmp/graphmind-ci-tls/Caddyfile
+          docker exec "$caddy_container" caddy validate --config /tmp/graphmind-ci-tls/Caddyfile --adapter caddyfile
+          docker exec "$caddy_container" caddy reload --config /tmp/graphmind-ci-tls/Caddyfile --adapter caddyfile
+
+      - name: Smoke-check TLS Caddy ingress
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --noproxy "*" \
+            --resolve graphmind.example.com:80:127.0.0.1 \
+            --dump-header tmp-deployment-gates/http-headers.txt \
+            --output /dev/null http://graphmind.example.com/healthz
+          grep -qi '^location: https://graphmind.example.com/' tmp-deployment-gates/http-headers.txt
+
+          curl --fail --silent --show-error --noproxy "*" --insecure \
+            --resolve graphmind.example.com:443:127.0.0.1 \
+            --dump-header tmp-deployment-gates/https-headers.txt \
+            --output /dev/null https://graphmind.example.com/healthz
+          tr -d '\r' < tmp-deployment-gates/https-headers.txt > tmp-deployment-gates/https-headers-normalized.txt
+          grep -qi '^strict-transport-security: max-age=31536000; includesubdomains; preload$' tmp-deployment-gates/https-headers-normalized.txt
+          grep -qi "^content-security-policy: .*default-src 'self';" tmp-deployment-gates/https-headers-normalized.txt
+
+          openssl s_client -connect 127.0.0.1:443 -servername graphmind.example.com \
+            -CAfile tmp-deployment-gates/tls/graphmind.crt -verify_return_error </dev/null
+
+          curl --fail --silent --show-error --noproxy "*" --insecure \
+            --resolve graphmind.example.com:443:127.0.0.1 \
+            --header 'X-Forwarded-For: 198.51.100.24' \
+            https://graphmind.example.com/api/ready \
+            > tmp-deployment-gates/tls-ready.json
+          backend/.venv/bin/python -c 'import json, sys; assert json.load(sys.stdin)["status"] == "ready"' < tmp-deployment-gates/tls-ready.json
+
+          if docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.tls.yml port frontend 80 >/dev/null 2>&1
+          then
+            echo 'frontend port 8080 is published in TLS mode' >&2
+            exit 1
+          fi
+
+      - name: Stop TLS Compose deployment
+        if: always()
+        env:
+          GRAPHMIND_SERVICE_ENV_FILE: /tmp/graphmind-ci.env
+        run: docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.tls.yml --env-file /tmp/graphmind-ci.env down --volumes --remove-orphans
+
+      - name: Remove ephemeral TLS material
+        if: always()
+        run: rm -rf tmp-deployment-gates/tls
+
+      - name: Upload deployment gate artifacts
+        if: always()
+        # v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: deployment-gates
+          path: |
+            tmp-deployment-gates
+
+  frontend-gates:
+    name: Frontend gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        # v4.2.2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Set up Node.js
+        # v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Set up Python
+        # v5.6.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+
+      - name: Set up uv
+        # v6.8.0
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: "0.9.27"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install backend contract dependencies
+        working-directory: backend
+        run: uv sync --frozen
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run source lint
+        run: npm run lint:source
+
+      - name: Check artifact hygiene
+        run: npm run clean:artifacts -- --check
+
+      - name: Run frontend tests
+        run: npm test
+
+      - name: Run frontend type check
+        run: npm run lint
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Audit architecture budgets
+        run: npm run audit:architecture
+
+      - name: Run layout audit
+        run: npm run audit:layout
+
+      - name: Run quality audit
+        run: npm run audit:quality
+
+      - name: Upload layout audit artifacts
+        if: always()
+        # v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: layout-audit
+          path: |
+            tmp-layout-audit-auto
+
+      - name: Upload frontend build artifact
+        if: always()
+        # v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: frontend-dist
+          path: |
+            frontend/dist
+
+  supply-chain-gates:
+    name: Supply-chain gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        # v4.2.2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Set up Node.js
+        # v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Set up Python
+        # v5.6.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+
+      - name: Set up uv
+        # v6.8.0
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: "0.9.27"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Validate npm lockfile integrity
+        run: npm ci --ignore-scripts
+
+      - name: Audit npm dependencies
+        run: npm audit --audit-level=high
+
+      - name: Export frozen production Python dependencies
+        working-directory: backend
+        run: uv export --frozen --no-dev --no-emit-project --no-hashes --output-file /tmp/graphmind-production-requirements.txt
+
+      - name: Audit Python dependencies
+        working-directory: backend
+        run: uvx --from pip-audit==2.9.0 pip-audit --requirement /tmp/graphmind-production-requirements.txt --no-deps --disable-pip
+
+      - name: Parse CI configuration and verify Docker image pins
+        working-directory: .
+        run: |
+          ruby -e 'require "yaml"; YAML.safe_load(File.read(ARGV.fetch(0)), aliases: true); puts "workflow YAML parsed"' .github/workflows/productization-gates.yml
+          for dockerfile in deploy/backend.Dockerfile deploy/frontend.Dockerfile; do
+            awk '
+              /^[[:space:]]*FROM[[:space:]]/ {
+                if ($2 !~ /@sha256:[0-9a-f]{64}$/) {
+                  printf "%s has an unpinned base image: %s\\n", FILENAME, $2 > "/dev/stderr"
+                  invalid = 1
+                }
+              }
+              /^[[:space:]]*COPY[[:space:]]+--from=/ {
+                image = $2
+                sub(/^--from=/, "", image)
+                if (image ~ /[\/:]/ && image !~ /@sha256:[0-9a-f]{64}$/) {
+                  printf "%s has an unpinned external build image: %s\\n", FILENAME, image > "/dev/stderr"
+                  invalid = 1
+                }
+              }
+              END { exit invalid }
+            ' "$dockerfile"
+          done
+          awk '
+            /^[[:space:]]*image:[[:space:]]/ {
+              if ($2 !~ /@sha256:[0-9a-f]{64}$/) {
+                printf "%s has an unpinned service image: %s\n", FILENAME, $2 > "/dev/stderr"
+                invalid = 1
+              }
+            }
+            END { exit invalid }
+          ' deploy/docker-compose.yml deploy/docker-compose.tls.yml
+          if rg -q 'registry\.npmmirror\.com' frontend/package-lock.json
+          then
+            echo 'package-lock.json contains a non-canonical npm registry URL' >&2
+            exit 1
+          fi
+
+  smoke-gates:
+    name: Smoke gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        # v4.2.2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Set up Python
+        # v5.6.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+
+      - name: Set up uv
+        # v6.8.0
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          version: "0.9.27"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Set up Node.js
+        # v4.4.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: uv sync --frozen --extra dev
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Start backend for e2e smoke
+        run: |
+          mkdir -p /tmp/graphmind-e2e-workspace
+          backend/.venv/bin/python -m uvicorn graphmind.api.app:app \
+            --host 127.0.0.1 \
+            --port 8000 \
+            --app-dir backend \
+            > /tmp/graphmind-e2e-backend.log 2>&1 &
+          echo $! > /tmp/graphmind-e2e-backend.pid
+          for _ in $(seq 1 60); do
+            if curl --fail --silent --show-error http://127.0.0.1:8000/api/health > /dev/null
+            then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/graphmind-e2e-backend.log
+          exit 1
+
+      - name: Run browser e2e smoke
+        working-directory: frontend
+        run: npm run test:e2e
+
+      - name: Stop backend for e2e smoke
+        if: always()
+        run: |
+          if test -f /tmp/graphmind-e2e-backend.pid
+          then
+            kill "$(cat /tmp/graphmind-e2e-backend.pid)" || true
+          fi

@@ -1,0 +1,15 @@
+{
+  "trackedFiles": {
+    "frontend/src/App.tsx": 350,
+    "frontend/src/components/Workspace.tsx": 1700,
+    "frontend/src/components/GraphCanvas.tsx": 2300,
+    "frontend/src/components/ImportPanel.tsx": 420,
+    "frontend/src/components/RelationshipReview.tsx": 950,
+    "frontend/src/components/workbench/InsightPanel.tsx": 750,
+    "frontend/src/styles/app.css": 9800,
+    "backend/graphmind/api/app.py": 220,
+    "backend/graphmind/api/routes.py": 2900,
+    "backend/graphmind/services/import_service.py": 1800,
+    "backend/graphmind/storage/repositories.py": 1200
+  }
+}

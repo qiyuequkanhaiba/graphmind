@@ -1,0 +1,26 @@
+{
+  "layout": {
+    "maxProblems": 0,
+    "minViewportStateChecks": 65
+  },
+  "visual": {
+    "requiredStates": [
+      "graph-default",
+      "data-dialog",
+      "ai-settings-dialog",
+      "project-sharing-dialog"
+    ],
+    "requiredViewports": [
+      "desktop",
+      "mobile",
+      "compact-mobile"
+    ]
+  },
+  "performance": {
+    "maxInitialJsKb": 750,
+    "maxAsyncJsKb": 560,
+    "maxCssKb": 160,
+    "maxBuildWarnings": 0,
+    "buildWarningChunkKb": 560
+  }
+}

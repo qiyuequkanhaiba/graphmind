@@ -1,0 +1,39 @@
+[project]
+name = "graphmind-backend"
+version = "0.1.0"
+description = "Local-first spreadsheet to knowledge graph backend"
+requires-python = ">=3.11"
+dependencies = [
+  "duckdb>=0.10.0",
+  "fastapi>=0.111.0",
+  "openpyxl>=3.1.2",
+  "pandas>=2.2.0",
+  "pydantic>=2.7.0",
+  "python-multipart>=0.0.31",
+  "sqlalchemy>=2.0.30",
+  "starlette>=1.3.1",
+  "uvicorn>=0.29.0",
+  "xlrd>=2.0.1",
+]
+
+[project.scripts]
+graphmind-review-analytics-maintenance = "graphmind.workers.review_analytics_maintenance:main"
+
+[project.optional-dependencies]
+dev = [
+  "httpx>=0.27.0",
+  "pytest>=8.2.0",
+  "pytest-cov>=5.0.0",
+  "ruff>=0.4.4"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

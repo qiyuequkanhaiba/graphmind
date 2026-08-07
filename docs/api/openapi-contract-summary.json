@@ -1,0 +1,5259 @@
+{
+  "components": {
+    "schemas": {
+      "AIChatSettings": {
+        "properties": {
+          "api_key": {
+            "default": "",
+            "title": "Api Key",
+            "type": "string"
+          },
+          "base_url": {
+            "default": "",
+            "title": "Base Url",
+            "type": "string"
+          },
+          "model": {
+            "default": "graphmind-rules",
+            "title": "Model",
+            "type": "string"
+          },
+          "provider": {
+            "default": "rules",
+            "title": "Provider",
+            "type": "string"
+          },
+          "temperature": {
+            "default": 0.1,
+            "title": "Temperature",
+            "type": "number"
+          }
+        },
+        "title": "AIChatSettings",
+        "type": "object"
+      },
+      "AISettings": {
+        "properties": {
+          "chat": {
+            "$ref": "#/components/schemas/AIChatSettings"
+          },
+          "vector": {
+            "$ref": "#/components/schemas/AIVectorSettings"
+          }
+        },
+        "title": "AISettings",
+        "type": "object"
+      },
+      "AIVectorSettings": {
+        "properties": {
+          "api_key": {
+            "default": "",
+            "title": "Api Key",
+            "type": "string"
+          },
+          "base_url": {
+            "default": "",
+            "title": "Base Url",
+            "type": "string"
+          },
+          "dimensions": {
+            "default": 0,
+            "title": "Dimensions",
+            "type": "integer"
+          },
+          "document_count": {
+            "default": 0,
+            "title": "Document Count",
+            "type": "integer"
+          },
+          "embedding_model": {
+            "default": "",
+            "title": "Embedding Model",
+            "type": "string"
+          },
+          "index_status": {
+            "default": "not_built",
+            "title": "Index Status",
+            "type": "string"
+          },
+          "last_built_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Built At"
+          },
+          "model": {
+            "default": "",
+            "title": "Model",
+            "type": "string"
+          },
+          "provider": {
+            "default": "none",
+            "title": "Provider",
+            "type": "string"
+          }
+        },
+        "title": "AIVectorSettings",
+        "type": "object"
+      },
+      "Body_create_import_job_api_projects__project_id__import_jobs_post": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_create_import_job_api_projects__project_id__import_jobs_post",
+        "type": "object"
+      },
+      "Body_import_file_api_projects__project_id__imports_post": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_import_file_api_projects__project_id__imports_post",
+        "type": "object"
+      },
+      "Body_import_structured_batch_api_projects__project_id__import_batches_post": {
+        "properties": {
+          "files": {
+            "items": {
+              "contentMediaType": "application/octet-stream",
+              "type": "string"
+            },
+            "title": "Files",
+            "type": "array"
+          },
+          "label": {
+            "default": "Structured import batch",
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "files"
+        ],
+        "title": "Body_import_structured_batch_api_projects__project_id__import_batches_post",
+        "type": "object"
+      },
+      "ChatAnswerResponse": {
+        "properties": {
+          "answer": {
+            "title": "Answer",
+            "type": "string"
+          },
+          "answer_confidence": {
+            "title": "Answer Confidence",
+            "type": "string"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/CitationResponse"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "string"
+          },
+          "content": {
+            "title": "Content",
+            "type": "string"
+          },
+          "graph_actions": {
+            "items": {
+              "$ref": "#/components/schemas/GraphActionResponse"
+            },
+            "title": "Graph Actions",
+            "type": "array"
+          },
+          "highlighted_graph_path": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Highlighted Graph Path",
+            "type": "array"
+          },
+          "next_steps": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Next Steps",
+            "type": "array"
+          },
+          "query_plan": {
+            "additionalProperties": true,
+            "title": "Query Plan",
+            "type": "object"
+          },
+          "retrieved_evidence": {
+            "items": {
+              "$ref": "#/components/schemas/RetrievedEvidenceResponse"
+            },
+            "title": "Retrieved Evidence",
+            "type": "array"
+          }
+        },
+        "required": [
+          "answer",
+          "content",
+          "query_plan",
+          "confidence",
+          "answer_confidence",
+          "citations",
+          "highlighted_graph_path"
+        ],
+        "title": "ChatAnswerResponse",
+        "type": "object"
+      },
+      "ChatRequest": {
+        "properties": {
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "selection": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selection"
+          }
+        },
+        "required": [
+          "question"
+        ],
+        "title": "ChatRequest",
+        "type": "object"
+      },
+      "CitationResponse": {
+        "properties": {
+          "citation_type": {
+            "title": "Citation Type",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "source_ref": {
+            "title": "Source Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "source_ref",
+          "citation_type"
+        ],
+        "title": "CitationResponse",
+        "type": "object"
+      },
+      "DocumentChunkPageResponse": {
+        "properties": {
+          "has_more": {
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentChunkResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset",
+          "has_more"
+        ],
+        "title": "DocumentChunkPageResponse",
+        "type": "object"
+      },
+      "DocumentChunkResponse": {
+        "properties": {
+          "chunk_index": {
+            "title": "Chunk Index",
+            "type": "integer"
+          },
+          "content": {
+            "title": "Content",
+            "type": "string"
+          },
+          "content_hash": {
+            "title": "Content Hash",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "integer"
+          },
+          "heading": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heading"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "title": "Metadata",
+            "type": "object"
+          },
+          "source_ref": {
+            "title": "Source Ref",
+            "type": "string"
+          },
+          "token_count": {
+            "title": "Token Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "document_id",
+          "chunk_index",
+          "heading",
+          "content",
+          "token_count",
+          "source_ref",
+          "content_hash",
+          "metadata",
+          "created_at"
+        ],
+        "title": "DocumentChunkResponse",
+        "type": "object"
+      },
+      "DuplicateSuggestionGroupResponse": {
+        "properties": {
+          "canonical_suggestion_id": {
+            "title": "Canonical Suggestion Id",
+            "type": "integer"
+          },
+          "duplicate_suggestion_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Duplicate Suggestion Ids",
+            "type": "array"
+          },
+          "relationship_type": {
+            "title": "Relationship Type",
+            "type": "string"
+          },
+          "source_label": {
+            "title": "Source Label",
+            "type": "string"
+          },
+          "target_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Label"
+          }
+        },
+        "required": [
+          "canonical_suggestion_id",
+          "duplicate_suggestion_ids",
+          "source_label",
+          "target_label",
+          "relationship_type"
+        ],
+        "title": "DuplicateSuggestionGroupResponse",
+        "type": "object"
+      },
+      "EntityMatchReviewRequest": {
+        "properties": {
+          "decision_status": {
+            "title": "Decision Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision_status"
+        ],
+        "title": "EntityMatchReviewRequest",
+        "type": "object"
+      },
+      "EntityMatchReviewResponse": {
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "evidence_ref": {
+            "title": "Evidence Ref",
+            "type": "string"
+          },
+          "evidence_summary": {
+            "title": "Evidence Summary",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "matched_keys": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Matched Keys",
+            "type": "array"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "title": "Metadata",
+            "type": "object"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "integer"
+          },
+          "relationship_type": {
+            "title": "Relationship Type",
+            "type": "string"
+          },
+          "source_label": {
+            "title": "Source Label",
+            "type": "string"
+          },
+          "source_node_id": {
+            "title": "Source Node Id",
+            "type": "integer"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "source_type": {
+            "title": "Source Type",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "target_label": {
+            "title": "Target Label",
+            "type": "string"
+          },
+          "target_node_id": {
+            "title": "Target Node Id",
+            "type": "integer"
+          },
+          "target_type": {
+            "title": "Target Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "source_node_id",
+          "target_node_id",
+          "source_label",
+          "source_type",
+          "target_label",
+          "target_type",
+          "relationship_type",
+          "confidence",
+          "status",
+          "evidence_ref",
+          "evidence_summary",
+          "matched_keys",
+          "source_refs",
+          "metadata"
+        ],
+        "title": "EntityMatchReviewResponse",
+        "type": "object"
+      },
+      "ExtractedEntityPageResponse": {
+        "properties": {
+          "has_more": {
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedEntityResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset",
+          "has_more"
+        ],
+        "title": "ExtractedEntityPageResponse",
+        "type": "object"
+      },
+      "ExtractedEntityResponse": {
+        "properties": {
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Aliases",
+            "type": "array"
+          },
+          "canonical_name": {
+            "title": "Canonical Name",
+            "type": "string"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "title": "Metadata",
+            "type": "object"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "canonical_name",
+          "entity_type",
+          "aliases",
+          "confidence",
+          "source_refs",
+          "metadata",
+          "created_at"
+        ],
+        "title": "ExtractedEntityResponse",
+        "type": "object"
+      },
+      "ExtractedRelationshipPageResponse": {
+        "properties": {
+          "has_more": {
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedRelationshipResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset",
+          "has_more"
+        ],
+        "title": "ExtractedRelationshipPageResponse",
+        "type": "object"
+      },
+      "ExtractedRelationshipResponse": {
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "evidence_payload": {
+            "additionalProperties": true,
+            "title": "Evidence Payload",
+            "type": "object"
+          },
+          "evidence_summary": {
+            "title": "Evidence Summary",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "relationship_type": {
+            "title": "Relationship Type",
+            "type": "string"
+          },
+          "source_entity_id": {
+            "title": "Source Entity Id",
+            "type": "integer"
+          },
+          "source_name": {
+            "title": "Source Name",
+            "type": "string"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "source_type": {
+            "title": "Source Type",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "target_entity_id": {
+            "title": "Target Entity Id",
+            "type": "integer"
+          },
+          "target_name": {
+            "title": "Target Name",
+            "type": "string"
+          },
+          "target_type": {
+            "title": "Target Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source_entity_id",
+          "target_entity_id",
+          "source_name",
+          "source_type",
+          "target_name",
+          "target_type",
+          "relationship_type",
+          "confidence",
+          "status",
+          "evidence_summary",
+          "evidence_payload",
+          "source_refs",
+          "created_at"
+        ],
+        "title": "ExtractedRelationshipResponse",
+        "type": "object"
+      },
+      "GraphActionResponse": {
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "edge_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Edge Ids",
+            "type": "array"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Refs",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "title": "Metadata",
+            "type": "object"
+          },
+          "node_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Node Ids",
+            "type": "array"
+          },
+          "suggestion_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Suggestion Ids",
+            "type": "array"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "label"
+        ],
+        "title": "GraphActionResponse",
+        "type": "object"
+      },
+      "GraphEdgeResponse": {
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "created_from_suggestion_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created From Suggestion Id"
+          },
+          "edge_type": {
+            "title": "Edge Type",
+            "type": "string"
+          },
+          "evidence_payload": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Payload"
+          },
+          "evidence_ref": {
+            "title": "Evidence Ref",
+            "type": "string"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Refs",
+            "type": "array"
+          },
+          "evidence_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Summary"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "title": "Metadata",
+            "type": "object"
+          },
+          "source_node_id": {
+            "title": "Source Node Id",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "target_node_id": {
+            "title": "Target Node Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "source_node_id",
+          "target_node_id",
+          "edge_type",
+          "confidence",
+          "status",
+          "evidence_ref",
+          "created_from_suggestion_id",
+          "metadata",
+          "evidence_summary",
+          "evidence_payload"
+        ],
+        "title": "GraphEdgeResponse",
+        "type": "object"
+      },
+      "GraphNodeResponse": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "title": "Metadata",
+            "type": "object"
+          },
+          "node_type": {
+            "title": "Node Type",
+            "type": "string"
+          },
+          "position_x": {
+            "title": "Position X",
+            "type": "number"
+          },
+          "position_y": {
+            "title": "Position Y",
+            "type": "number"
+          },
+          "source_ref": {
+            "title": "Source Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "node_type",
+          "label",
+          "source_ref",
+          "metadata",
+          "position_x",
+          "position_y"
+        ],
+        "title": "GraphNodeResponse",
+        "type": "object"
+      },
+      "GraphResponse": {
+        "properties": {
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/GraphEdgeResponse"
+            },
+            "title": "Edges",
+            "type": "array"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/GraphNodeResponse"
+            },
+            "title": "Nodes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "nodes",
+          "edges"
+        ],
+        "title": "GraphResponse",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "ImportBatchResponse": {
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ImportItemResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "progress": {
+            "title": "Progress",
+            "type": "integer"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "label",
+          "status",
+          "progress",
+          "summary",
+          "error",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ImportBatchResponse",
+        "type": "object"
+      },
+      "ImportItemResponse": {
+        "properties": {
+          "artifact_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artifact Ref"
+          },
+          "batch_id": {
+            "title": "Batch Id",
+            "type": "integer"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "file_type": {
+            "title": "File Type",
+            "type": "string"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "integer"
+          },
+          "raw_data_ref": {
+            "title": "Raw Data Ref",
+            "type": "string"
+          },
+          "source_kind": {
+            "title": "Source Kind",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "batch_id",
+          "project_id",
+          "filename",
+          "file_type",
+          "source_kind",
+          "status",
+          "raw_data_ref",
+          "artifact_ref",
+          "error",
+          "summary",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ImportItemResponse",
+        "type": "object"
+      },
+      "ImportJobRecoveryResponse": {
+        "properties": {
+          "recovered_count": {
+            "title": "Recovered Count",
+            "type": "integer"
+          },
+          "submitted_count": {
+            "title": "Submitted Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "recovered_count",
+          "submitted_count"
+        ],
+        "title": "ImportJobRecoveryResponse",
+        "type": "object"
+      },
+      "ImportJobResponse": {
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "dataset_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dataset Id"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "progress": {
+            "title": "Progress",
+            "type": "integer"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "integer"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "label",
+          "kind",
+          "status",
+          "progress",
+          "summary",
+          "error",
+          "retryable",
+          "dataset_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ImportJobResponse",
+        "type": "object"
+      },
+      "ImportResponse": {
+        "properties": {
+          "dataset_id": {
+            "title": "Dataset Id",
+            "type": "integer"
+          },
+          "field_count": {
+            "title": "Field Count",
+            "type": "integer"
+          },
+          "graph": {
+            "$ref": "#/components/schemas/GraphResponse"
+          },
+          "graph_edge_count": {
+            "title": "Graph Edge Count",
+            "type": "integer"
+          },
+          "graph_node_count": {
+            "title": "Graph Node Count",
+            "type": "integer"
+          },
+          "import_job_id": {
+            "title": "Import Job Id",
+            "type": "integer"
+          },
+          "sheet_count": {
+            "title": "Sheet Count",
+            "type": "integer"
+          },
+          "suggestion_count": {
+            "title": "Suggestion Count",
+            "type": "integer"
+          },
+          "suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/RelationshipSuggestionResponse"
+            },
+            "title": "Suggestions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "import_job_id",
+          "dataset_id",
+          "sheet_count",
+          "field_count",
+          "suggestion_count",
+          "graph_node_count",
+          "graph_edge_count",
+          "graph",
+          "suggestions"
+        ],
+        "title": "ImportResponse",
+        "type": "object"
+      },
+      "ProjectCreateRequest": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "ProjectCreateRequest",
+        "type": "object"
+      },
+      "ProjectResponse": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "ProjectResponse",
+        "type": "object"
+      },
+      "ProjectSettingsResponse": {
+        "properties": {
+          "ai": {
+            "$ref": "#/components/schemas/AISettings"
+          },
+          "review_analytics": {
+            "$ref": "#/components/schemas/ReviewAnalyticsSettings"
+          }
+        },
+        "title": "ProjectSettingsResponse",
+        "type": "object"
+      },
+      "ProjectShareTokenCreateRequest": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "label"
+        ],
+        "title": "ProjectShareTokenCreateRequest",
+        "type": "object"
+      },
+      "ProjectShareTokenCreatedResponse": {
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "integer"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "token": {
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "role",
+          "label",
+          "token",
+          "created_at"
+        ],
+        "title": "ProjectShareTokenCreatedResponse",
+        "type": "object"
+      },
+      "ProjectShareTokenResponse": {
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "last_used_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Used At"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "integer"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "role",
+          "label",
+          "created_at",
+          "last_used_at",
+          "revoked_at"
+        ],
+        "title": "ProjectShareTokenResponse",
+        "type": "object"
+      },
+      "ProjectShareTokenRevocationResponse": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "integer"
+          },
+          "revoked": {
+            "title": "Revoked",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "revoked"
+        ],
+        "title": "ProjectShareTokenRevocationResponse",
+        "type": "object"
+      },
+      "RelationshipDuplicateCleanupResponse": {
+        "properties": {
+          "duplicate_groups": {
+            "items": {
+              "$ref": "#/components/schemas/DuplicateSuggestionGroupResponse"
+            },
+            "title": "Duplicate Groups",
+            "type": "array"
+          },
+          "relinked_edge_count": {
+            "title": "Relinked Edge Count",
+            "type": "integer"
+          },
+          "remaining_duplicate_count": {
+            "title": "Remaining Duplicate Count",
+            "type": "integer"
+          },
+          "removed_duplicate_count": {
+            "title": "Removed Duplicate Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "removed_duplicate_count",
+          "relinked_edge_count",
+          "remaining_duplicate_count",
+          "duplicate_groups"
+        ],
+        "title": "RelationshipDuplicateCleanupResponse",
+        "type": "object"
+      },
+      "RelationshipGovernanceSummaryResponse": {
+        "properties": {
+          "accepted_suggestion_count": {
+            "title": "Accepted Suggestion Count",
+            "type": "integer"
+          },
+          "duplicate_group_count": {
+            "title": "Duplicate Group Count",
+            "type": "integer"
+          },
+          "duplicate_groups": {
+            "items": {
+              "$ref": "#/components/schemas/DuplicateSuggestionGroupResponse"
+            },
+            "title": "Duplicate Groups",
+            "type": "array"
+          },
+          "duplicate_suggestion_count": {
+            "title": "Duplicate Suggestion Count",
+            "type": "integer"
+          },
+          "edited_suggestion_count": {
+            "title": "Edited Suggestion Count",
+            "type": "integer"
+          },
+          "pending_suggestion_count": {
+            "title": "Pending Suggestion Count",
+            "type": "integer"
+          },
+          "rejected_suggestion_count": {
+            "title": "Rejected Suggestion Count",
+            "type": "integer"
+          },
+          "total_suggestion_count": {
+            "title": "Total Suggestion Count",
+            "type": "integer"
+          },
+          "visible_suggestion_count": {
+            "title": "Visible Suggestion Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total_suggestion_count",
+          "visible_suggestion_count",
+          "duplicate_suggestion_count",
+          "duplicate_group_count",
+          "pending_suggestion_count",
+          "accepted_suggestion_count",
+          "rejected_suggestion_count",
+          "edited_suggestion_count",
+          "duplicate_groups"
+        ],
+        "title": "RelationshipGovernanceSummaryResponse",
+        "type": "object"
+      },
+      "RelationshipReviewRequest": {
+        "properties": {
+          "decision_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Note"
+          },
+          "decision_status": {
+            "title": "Decision Status",
+            "type": "string"
+          },
+          "evidence_quality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Quality"
+          },
+          "relationship_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relationship Type"
+          },
+          "reviewed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By"
+          }
+        },
+        "required": [
+          "decision_status"
+        ],
+        "title": "RelationshipReviewRequest",
+        "type": "object"
+      },
+      "RelationshipSuggestionResponse": {
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "decision_status": {
+            "title": "Decision Status",
+            "type": "string"
+          },
+          "evidence_payload": {
+            "additionalProperties": true,
+            "title": "Evidence Payload",
+            "type": "object"
+          },
+          "evidence_summary": {
+            "title": "Evidence Summary",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "quality_label": {
+            "title": "Quality Label",
+            "type": "string"
+          },
+          "quality_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Quality Reasons",
+            "type": "array"
+          },
+          "relationship_type": {
+            "title": "Relationship Type",
+            "type": "string"
+          },
+          "review_priority": {
+            "title": "Review Priority",
+            "type": "string"
+          },
+          "reviewed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By"
+          },
+          "source_field_id": {
+            "title": "Source Field Id",
+            "type": "integer"
+          },
+          "source_label": {
+            "title": "Source Label",
+            "type": "string"
+          },
+          "target_field_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Field Id"
+          },
+          "target_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Label"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source_field_id",
+          "target_field_id",
+          "source_label",
+          "target_label",
+          "relationship_type",
+          "confidence",
+          "evidence_summary",
+          "evidence_payload",
+          "decision_status",
+          "created_at",
+          "updated_at",
+          "quality_label",
+          "review_priority",
+          "quality_reasons"
+        ],
+        "title": "RelationshipSuggestionResponse",
+        "type": "object"
+      },
+      "RetrievedEvidenceResponse": {
+        "properties": {
+          "excerpt": {
+            "title": "Excerpt",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "source_ref": {
+            "title": "Source Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "kind",
+          "source_ref",
+          "score",
+          "excerpt"
+        ],
+        "title": "RetrievedEvidenceResponse",
+        "type": "object"
+      },
+      "ReviewAnalyticsEvidenceCoverageResponse": {
+        "properties": {
+          "coverage_ratio": {
+            "title": "Coverage Ratio",
+            "type": "number"
+          },
+          "with_evidence_count": {
+            "title": "With Evidence Count",
+            "type": "integer"
+          },
+          "without_evidence_count": {
+            "title": "Without Evidence Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "with_evidence_count",
+          "without_evidence_count",
+          "coverage_ratio"
+        ],
+        "title": "ReviewAnalyticsEvidenceCoverageResponse",
+        "type": "object"
+      },
+      "ReviewAnalyticsResponse": {
+        "properties": {
+          "aging_buckets": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Aging Buckets",
+            "type": "object"
+          },
+          "decision_trend": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Decision Trend",
+            "type": "object"
+          },
+          "evidence_coverage": {
+            "$ref": "#/components/schemas/ReviewAnalyticsEvidenceCoverageResponse"
+          },
+          "generated_at": {
+            "title": "Generated At",
+            "type": "string"
+          },
+          "quality_distribution": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Quality Distribution",
+            "type": "object"
+          },
+          "sla": {
+            "$ref": "#/components/schemas/ReviewAnalyticsSLAResponse"
+          },
+          "window_days": {
+            "title": "Window Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "window_days",
+          "generated_at",
+          "sla",
+          "aging_buckets",
+          "decision_trend",
+          "quality_distribution",
+          "evidence_coverage"
+        ],
+        "title": "ReviewAnalyticsResponse",
+        "type": "object"
+      },
+      "ReviewAnalyticsSLAResponse": {
+        "properties": {
+          "oldest_pending_age_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oldest Pending Age Days"
+          },
+          "overdue_pending_count": {
+            "title": "Overdue Pending Count",
+            "type": "integer"
+          },
+          "pending_sla_days": {
+            "title": "Pending Sla Days",
+            "type": "integer"
+          },
+          "pending_total": {
+            "title": "Pending Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "pending_sla_days",
+          "pending_total",
+          "overdue_pending_count",
+          "oldest_pending_age_days"
+        ],
+        "title": "ReviewAnalyticsSLAResponse",
+        "type": "object"
+      },
+      "ReviewAnalyticsSettings": {
+        "properties": {
+          "auto_cleanup_enabled": {
+            "default": false,
+            "title": "Auto Cleanup Enabled",
+            "type": "boolean"
+          },
+          "retention_days": {
+            "default": 30,
+            "title": "Retention Days",
+            "type": "integer"
+          }
+        },
+        "title": "ReviewAnalyticsSettings",
+        "type": "object"
+      },
+      "ReviewAnalyticsSnapshotCleanupEventResponse": {
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "cutoff_date": {
+            "title": "Cutoff Date",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "integer"
+          },
+          "remaining_count": {
+            "title": "Remaining Count",
+            "type": "integer"
+          },
+          "removed_count": {
+            "title": "Removed Count",
+            "type": "integer"
+          },
+          "retention_days": {
+            "title": "Retention Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "retention_days",
+          "cutoff_date",
+          "removed_count",
+          "remaining_count",
+          "created_at"
+        ],
+        "title": "ReviewAnalyticsSnapshotCleanupEventResponse",
+        "type": "object"
+      },
+      "ReviewAnalyticsSnapshotCleanupRequest": {
+        "properties": {
+          "retention_days": {
+            "default": 30,
+            "title": "Retention Days",
+            "type": "integer"
+          }
+        },
+        "title": "ReviewAnalyticsSnapshotCleanupRequest",
+        "type": "object"
+      },
+      "ReviewAnalyticsSnapshotCleanupResponse": {
+        "properties": {
+          "cutoff_date": {
+            "title": "Cutoff Date",
+            "type": "string"
+          },
+          "remaining_count": {
+            "title": "Remaining Count",
+            "type": "integer"
+          },
+          "removed_count": {
+            "title": "Removed Count",
+            "type": "integer"
+          },
+          "retention_days": {
+            "title": "Retention Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "retention_days",
+          "cutoff_date",
+          "removed_count",
+          "remaining_count"
+        ],
+        "title": "ReviewAnalyticsSnapshotCleanupResponse",
+        "type": "object"
+      },
+      "ReviewAnalyticsSnapshotResponse": {
+        "properties": {
+          "analytics": {
+            "$ref": "#/components/schemas/ReviewAnalyticsResponse"
+          },
+          "snapshot_date": {
+            "title": "Snapshot Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "snapshot_date",
+          "analytics"
+        ],
+        "title": "ReviewAnalyticsSnapshotResponse",
+        "type": "object"
+      },
+      "ReviewAnalyticsSnapshotSummaryResponse": {
+        "properties": {
+          "expired_snapshot_count": {
+            "title": "Expired Snapshot Count",
+            "type": "integer"
+          },
+          "latest_snapshot_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Snapshot Date"
+          },
+          "oldest_snapshot_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oldest Snapshot Date"
+          },
+          "retention_days": {
+            "title": "Retention Days",
+            "type": "integer"
+          },
+          "snapshot_count": {
+            "title": "Snapshot Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "retention_days",
+          "snapshot_count",
+          "expired_snapshot_count",
+          "oldest_snapshot_date",
+          "latest_snapshot_date"
+        ],
+        "title": "ReviewAnalyticsSnapshotSummaryResponse",
+        "type": "object"
+      },
+      "ReviewAnalyticsTrendResponse": {
+        "properties": {
+          "days": {
+            "title": "Days",
+            "type": "integer"
+          },
+          "generated_at": {
+            "title": "Generated At",
+            "type": "string"
+          },
+          "snapshots": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewAnalyticsSnapshotResponse"
+            },
+            "title": "Snapshots",
+            "type": "array"
+          },
+          "window_days": {
+            "title": "Window Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "window_days",
+          "days",
+          "generated_at",
+          "snapshots"
+        ],
+        "title": "ReviewAnalyticsTrendResponse",
+        "type": "object"
+      },
+      "SessionLoginRequest": {
+        "properties": {
+          "password": {
+            "title": "Password",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "SessionLoginRequest",
+        "type": "object"
+      },
+      "SessionLoginResponse": {
+        "properties": {
+          "auth_mode": {
+            "title": "Auth Mode",
+            "type": "string"
+          },
+          "csrf_token": {
+            "title": "Csrf Token",
+            "type": "string"
+          },
+          "expires_at": {
+            "title": "Expires At",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "auth_mode",
+          "csrf_token",
+          "expires_at"
+        ],
+        "title": "SessionLoginResponse",
+        "type": "object"
+      },
+      "SourceDetailResponse": {
+        "properties": {
+          "chunk_count": {
+            "title": "Chunk Count",
+            "type": "integer"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "document_type": {
+            "title": "Document Type",
+            "type": "string"
+          },
+          "entity_count": {
+            "title": "Entity Count",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "import_item_id": {
+            "title": "Import Item Id",
+            "type": "integer"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "title": "Metadata",
+            "type": "object"
+          },
+          "relationship_count": {
+            "title": "Relationship Count",
+            "type": "integer"
+          },
+          "source_ref": {
+            "title": "Source Ref",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "import_item_id",
+          "title",
+          "document_type",
+          "source_ref",
+          "metadata",
+          "chunk_count",
+          "entity_count",
+          "relationship_count",
+          "created_at"
+        ],
+        "title": "SourceDetailResponse",
+        "type": "object"
+      },
+      "SourceSummaryResponse": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "source_kind": {
+            "title": "Source Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_kind",
+          "count"
+        ],
+        "title": "SourceSummaryResponse",
+        "type": "object"
+      },
+      "URLImportRequest": {
+        "properties": {
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "URLImportRequest",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WorkspaceDeltaResponse": {
+        "properties": {
+          "entity_match_reviews": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/EntityMatchReviewResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Match Reviews"
+          },
+          "extracted_entities": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ExtractedEntityResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extracted Entities"
+          },
+          "extracted_relationships": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ExtractedRelationshipResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extracted Relationships"
+          },
+          "graph": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GraphResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "import_jobs": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ImportJobResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Import Jobs"
+          },
+          "mapping_reviews": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/EntityMatchReviewResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mapping Reviews"
+          },
+          "relationship_governance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RelationshipGovernanceSummaryResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "review_analytics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReviewAnalyticsResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "review_analytics_snapshot_cleanup_events": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ReviewAnalyticsSnapshotCleanupEventResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Analytics Snapshot Cleanup Events"
+          },
+          "review_analytics_snapshot_summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReviewAnalyticsSnapshotSummaryResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "review_analytics_trend": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReviewAnalyticsTrendResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_details": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/SourceDetailResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Details"
+          },
+          "source_summaries": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/SourceSummaryResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Summaries"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "suggestions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/RelationshipSuggestionResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suggestions"
+          },
+          "workspace_version": {
+            "title": "Workspace Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "workspace_version"
+        ],
+        "title": "WorkspaceDeltaResponse",
+        "type": "object"
+      },
+      "WorkspaceSnapshotResponse": {
+        "properties": {
+          "entity_match_reviews": {
+            "items": {
+              "$ref": "#/components/schemas/EntityMatchReviewResponse"
+            },
+            "title": "Entity Match Reviews",
+            "type": "array"
+          },
+          "extracted_entities": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedEntityResponse"
+            },
+            "title": "Extracted Entities",
+            "type": "array"
+          },
+          "extracted_relationships": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedRelationshipResponse"
+            },
+            "title": "Extracted Relationships",
+            "type": "array"
+          },
+          "graph": {
+            "$ref": "#/components/schemas/GraphResponse"
+          },
+          "import_jobs": {
+            "items": {
+              "$ref": "#/components/schemas/ImportJobResponse"
+            },
+            "title": "Import Jobs",
+            "type": "array"
+          },
+          "mapping_reviews": {
+            "items": {
+              "$ref": "#/components/schemas/EntityMatchReviewResponse"
+            },
+            "title": "Mapping Reviews",
+            "type": "array"
+          },
+          "project": {
+            "$ref": "#/components/schemas/ProjectResponse"
+          },
+          "relationship_governance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RelationshipGovernanceSummaryResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "review_analytics": {
+            "$ref": "#/components/schemas/ReviewAnalyticsResponse"
+          },
+          "review_analytics_snapshot_cleanup_events": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewAnalyticsSnapshotCleanupEventResponse"
+            },
+            "title": "Review Analytics Snapshot Cleanup Events",
+            "type": "array"
+          },
+          "review_analytics_snapshot_summary": {
+            "$ref": "#/components/schemas/ReviewAnalyticsSnapshotSummaryResponse"
+          },
+          "review_analytics_trend": {
+            "$ref": "#/components/schemas/ReviewAnalyticsTrendResponse"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/ProjectSettingsResponse"
+          },
+          "source_chunks_by_source_id": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/DocumentChunkResponse"
+              },
+              "type": "array"
+            },
+            "title": "Source Chunks By Source Id",
+            "type": "object"
+          },
+          "source_details": {
+            "items": {
+              "$ref": "#/components/schemas/SourceDetailResponse"
+            },
+            "title": "Source Details",
+            "type": "array"
+          },
+          "source_summaries": {
+            "items": {
+              "$ref": "#/components/schemas/SourceSummaryResponse"
+            },
+            "title": "Source Summaries",
+            "type": "array"
+          },
+          "suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/RelationshipSuggestionResponse"
+            },
+            "title": "Suggestions",
+            "type": "array"
+          },
+          "workspace_version": {
+            "title": "Workspace Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "workspace_version",
+          "project",
+          "graph",
+          "suggestions",
+          "relationship_governance",
+          "review_analytics",
+          "review_analytics_trend",
+          "review_analytics_snapshot_summary",
+          "review_analytics_snapshot_cleanup_events",
+          "settings",
+          "import_jobs",
+          "source_summaries",
+          "source_details",
+          "source_chunks_by_source_id",
+          "extracted_entities",
+          "extracted_relationships",
+          "entity_match_reviews",
+          "mapping_reviews"
+        ],
+        "title": "WorkspaceSnapshotResponse",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "GraphMind API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/auth/session": {
+      "get": {
+        "operationId": "get_current_session_api_auth_session_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionLoginResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Current Session",
+        "tags": [
+          "projects"
+        ]
+      },
+      "post": {
+        "operationId": "create_session_api_auth_session_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionLoginResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Session",
+        "tags": [
+          "projects"
+        ]
+      }
+    },
+    "/api/entity-matches/{edge_id}/review": {
+      "post": {
+        "operationId": "review_entity_match_api_entity_matches__edge_id__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "edge_id",
+            "required": true,
+            "schema": {
+              "title": "Edge Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntityMatchReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityMatchReviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review Entity Match",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Api Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "projects"
+        ]
+      }
+    },
+    "/api/mapping-reviews/{edge_id}/review": {
+      "post": {
+        "operationId": "review_mapping_api_mapping_reviews__edge_id__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "edge_id",
+            "required": true,
+            "schema": {
+              "title": "Edge Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntityMatchReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityMatchReviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review Mapping",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects": {
+      "post": {
+        "operationId": "create_project_api_projects_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Project",
+        "tags": [
+          "projects"
+        ]
+      }
+    },
+    "/api/projects/default": {
+      "post": {
+        "operationId": "get_or_create_default_project_api_projects_default_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Or Create Default Project",
+        "tags": [
+          "projects"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/chat": {
+      "post": {
+        "operationId": "ask_chat_api_projects__project_id__chat_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatAnswerResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ask Chat",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/data": {
+      "delete": {
+        "operationId": "reset_project_data_api_projects__project_id__data_delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Reset Project Data Api Projects  Project Id  Data Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reset Project Data",
+        "tags": [
+          "projects"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/entities": {
+      "get": {
+        "operationId": "get_extracted_entities_api_projects__project_id__entities_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ExtractedEntityResponse"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ExtractedEntityPageResponse"
+                    }
+                  ],
+                  "title": "Response Get Extracted Entities Api Projects  Project Id  Entities Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Extracted Entities",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/entity-matches": {
+      "get": {
+        "operationId": "get_entity_matches_api_projects__project_id__entity_matches_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EntityMatchReviewResponse"
+                  },
+                  "title": "Response Get Entity Matches Api Projects  Project Id  Entity Matches Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Entity Matches",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/entity-matches/{edge_id}/review": {
+      "post": {
+        "operationId": "review_project_entity_match_api_projects__project_id__entity_matches__edge_id__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "edge_id",
+            "required": true,
+            "schema": {
+              "title": "Edge Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntityMatchReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityMatchReviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review Project Entity Match",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/extracted-relationships": {
+      "get": {
+        "operationId": "get_extracted_relationships_api_projects__project_id__extracted_relationships_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ExtractedRelationshipResponse"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ExtractedRelationshipPageResponse"
+                    }
+                  ],
+                  "title": "Response Get Extracted Relationships Api Projects  Project Id  Extracted Relationships Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Extracted Relationships",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/graph": {
+      "get": {
+        "operationId": "get_graph_api_projects__project_id__graph_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edge_status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edge Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "edge_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Edge Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Graph",
+        "tags": [
+          "graph"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/import-batches": {
+      "get": {
+        "operationId": "get_import_batches_api_projects__project_id__import_batches_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ImportBatchResponse"
+                  },
+                  "title": "Response Get Import Batches Api Projects  Project Id  Import Batches Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Import Batches",
+        "tags": [
+          "imports"
+        ]
+      },
+      "post": {
+        "operationId": "import_structured_batch_api_projects__project_id__import_batches_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_import_structured_batch_api_projects__project_id__import_batches_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportBatchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Structured Batch",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/import-batches/{batch_id}": {
+      "get": {
+        "operationId": "get_import_batch_api_projects__project_id__import_batches__batch_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "batch_id",
+            "required": true,
+            "schema": {
+              "title": "Batch Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportBatchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Import Batch",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/import-events": {
+      "get": {
+        "operationId": "stream_import_events_api_projects__project_id__import_events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "once",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Once",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Stream Import Events",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/import-items/{item_id}/retry": {
+      "post": {
+        "operationId": "retry_import_item_api_projects__project_id__import_items__item_id__retry_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "title": "Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportBatchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Retry Import Item",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/import-jobs": {
+      "get": {
+        "operationId": "get_import_jobs_api_projects__project_id__import_jobs_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ImportJobResponse"
+                  },
+                  "title": "Response Get Import Jobs Api Projects  Project Id  Import Jobs Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Import Jobs",
+        "tags": [
+          "imports"
+        ]
+      },
+      "post": {
+        "operationId": "create_import_job_api_projects__project_id__import_jobs_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_import_job_api_projects__project_id__import_jobs_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportJobResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Import Job",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/import-jobs/recover": {
+      "post": {
+        "operationId": "recover_import_jobs_api_projects__project_id__import_jobs_recover_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportJobRecoveryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Recover Import Jobs",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/import-jobs/{job_id}": {
+      "get": {
+        "operationId": "get_import_job_api_projects__project_id__import_jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportJobResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Import Job",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/import-jobs/{job_id}/cancel": {
+      "post": {
+        "operationId": "cancel_import_job_api_projects__project_id__import_jobs__job_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportJobResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Import Job",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/import-jobs/{job_id}/retry": {
+      "post": {
+        "operationId": "retry_import_job_api_projects__project_id__import_jobs__job_id__retry_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportJobResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Retry Import Job",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/imports": {
+      "post": {
+        "operationId": "import_file_api_projects__project_id__imports_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_import_file_api_projects__project_id__imports_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import File",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/mapping-reviews": {
+      "get": {
+        "operationId": "get_mapping_reviews_api_projects__project_id__mapping_reviews_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EntityMatchReviewResponse"
+                  },
+                  "title": "Response Get Mapping Reviews Api Projects  Project Id  Mapping Reviews Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Mapping Reviews",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/mapping-reviews/{edge_id}/review": {
+      "post": {
+        "operationId": "review_project_mapping_api_projects__project_id__mapping_reviews__edge_id__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "edge_id",
+            "required": true,
+            "schema": {
+              "title": "Edge Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntityMatchReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityMatchReviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review Project Mapping",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/relationship-governance": {
+      "get": {
+        "operationId": "get_relationship_governance_summary_api_projects__project_id__relationship_governance_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelationshipGovernanceSummaryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Relationship Governance Summary",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/relationship-governance/cleanup-duplicates": {
+      "post": {
+        "operationId": "cleanup_duplicate_relationship_suggestions_api_projects__project_id__relationship_governance_cleanup_duplicates_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelationshipDuplicateCleanupResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cleanup Duplicate Relationship Suggestions",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/relationship-suggestions": {
+      "get": {
+        "operationId": "get_relationship_suggestions_api_projects__project_id__relationship_suggestions_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RelationshipSuggestionResponse"
+                  },
+                  "title": "Response Get Relationship Suggestions Api Projects  Project Id  Relationship Suggestions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Relationship Suggestions",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/relationship-suggestions/{suggestion_id}/review": {
+      "post": {
+        "operationId": "review_project_relationship_suggestion_api_projects__project_id__relationship_suggestions__suggestion_id__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "suggestion_id",
+            "required": true,
+            "schema": {
+              "title": "Suggestion Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RelationshipReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Review Project Relationship Suggestion Api Projects  Project Id  Relationship Suggestions  Suggestion Id  Review Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review Project Relationship Suggestion",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/review-analytics": {
+      "get": {
+        "operationId": "get_review_analytics_api_projects__project_id__review_analytics_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "window",
+            "required": false,
+            "schema": {
+              "default": "30d",
+              "title": "Window",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewAnalyticsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Review Analytics",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/review-analytics/snapshots": {
+      "get": {
+        "operationId": "get_review_analytics_snapshot_summary_api_projects__project_id__review_analytics_snapshots_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "retention_days",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Retention Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewAnalyticsSnapshotSummaryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Review Analytics Snapshot Summary",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/review-analytics/snapshots/cleanup": {
+      "post": {
+        "operationId": "cleanup_review_analytics_snapshots_api_projects__project_id__review_analytics_snapshots_cleanup_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ReviewAnalyticsSnapshotCleanupRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewAnalyticsSnapshotCleanupResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cleanup Review Analytics Snapshots",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/review-analytics/snapshots/cleanup-events": {
+      "get": {
+        "operationId": "get_review_analytics_snapshot_cleanup_events_api_projects__project_id__review_analytics_snapshots_cleanup_events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewAnalyticsSnapshotCleanupEventResponse"
+                  },
+                  "title": "Response Get Review Analytics Snapshot Cleanup Events Api Projects  Project Id  Review Analytics Snapshots Cleanup Events Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Review Analytics Snapshot Cleanup Events",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/review-analytics/snapshots/refresh": {
+      "post": {
+        "operationId": "refresh_review_analytics_snapshot_api_projects__project_id__review_analytics_snapshots_refresh_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "window",
+            "required": false,
+            "schema": {
+              "default": "30d",
+              "title": "Window",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewAnalyticsSnapshotResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Refresh Review Analytics Snapshot",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/review-analytics/trend": {
+      "get": {
+        "operationId": "get_review_analytics_trend_api_projects__project_id__review_analytics_trend_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "window",
+            "required": false,
+            "schema": {
+              "default": "30d",
+              "title": "Window",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 14,
+              "title": "Days",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewAnalyticsTrendResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Review Analytics Trend",
+        "tags": [
+          "reviews"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/sample-import": {
+      "post": {
+        "operationId": "import_sample_dataset_api_projects__project_id__sample_import_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Sample Dataset",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/settings": {
+      "get": {
+        "operationId": "get_project_settings_api_projects__project_id__settings_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectSettingsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Project Settings",
+        "tags": [
+          "projects"
+        ]
+      },
+      "put": {
+        "operationId": "update_project_settings_api_projects__project_id__settings_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectSettingsResponse"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectSettingsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Project Settings",
+        "tags": [
+          "projects"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/share-tokens": {
+      "get": {
+        "operationId": "list_project_share_tokens_api_projects__project_id__share_tokens_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectShareTokenResponse"
+                  },
+                  "title": "Response List Project Share Tokens Api Projects  Project Id  Share Tokens Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Project Share Tokens",
+        "tags": [
+          "projects"
+        ]
+      },
+      "post": {
+        "operationId": "create_project_share_token_api_projects__project_id__share_tokens_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectShareTokenCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectShareTokenCreatedResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Project Share Token",
+        "tags": [
+          "projects"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/share-tokens/{share_token_id}": {
+      "delete": {
+        "operationId": "revoke_project_share_token_api_projects__project_id__share_tokens__share_token_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "share_token_id",
+            "required": true,
+            "schema": {
+              "title": "Share Token Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectShareTokenRevocationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Revoke Project Share Token",
+        "tags": [
+          "projects"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/sources": {
+      "get": {
+        "operationId": "get_source_summaries_api_projects__project_id__sources_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SourceSummaryResponse"
+                  },
+                  "title": "Response Get Source Summaries Api Projects  Project Id  Sources Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Source Summaries",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/sources/detail": {
+      "get": {
+        "operationId": "get_source_details_api_projects__project_id__sources_detail_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SourceDetailResponse"
+                  },
+                  "title": "Response Get Source Details Api Projects  Project Id  Sources Detail Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Source Details",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/sources/{source_id}/chunks": {
+      "get": {
+        "operationId": "get_source_chunks_api_projects__project_id__sources__source_id__chunks_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "source_id",
+            "required": true,
+            "schema": {
+              "title": "Source Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/DocumentChunkResponse"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DocumentChunkPageResponse"
+                    }
+                  ],
+                  "title": "Response Get Source Chunks Api Projects  Project Id  Sources  Source Id  Chunks Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Source Chunks",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/url-imports": {
+      "post": {
+        "operationId": "import_url_source_api_projects__project_id__url_imports_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/URLImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportBatchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Url Source",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/vector-index/build": {
+      "post": {
+        "operationId": "build_vector_index_api_projects__project_id__vector_index_build_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectSettingsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Build Vector Index",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/workspace-delta": {
+      "get": {
+        "operationId": "get_workspace_delta_api_projects__project_id__workspace_delta_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since_version",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceDeltaResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Workspace Delta",
+        "tags": [
+          "projects"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/workspace-snapshot": {
+      "get": {
+        "operationId": "get_workspace_snapshot_api_projects__project_id__workspace_snapshot_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceSnapshotResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Workspace Snapshot",
+        "tags": [
+          "projects"
+        ]
+      }
+    },
+    "/api/ready": {
+      "get": {
+        "operationId": "ready_api_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Ready Api Ready Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ready",
+        "tags": [
+          "projects"
+        ]
+      }
+    },
+    "/api/relationship-suggestions/{suggestion_id}/review": {
+      "post": {
+        "operationId": "review_relationship_suggestion_api_relationship_suggestions__suggestion_id__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "suggestion_id",
+            "required": true,
+            "schema": {
+              "title": "Suggestion Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RelationshipReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Review Relationship Suggestion Api Relationship Suggestions  Suggestion Id  Review Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review Relationship Suggestion",
+        "tags": [
+          "reviews"
+        ]
+      }
+    }
+  }
+}
