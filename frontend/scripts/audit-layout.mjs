@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
+import { navigateToWorkbench, stopProcess } from "./layout-audit-runtime.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const frontendRoot = resolve(__dirname, "..");
@@ -154,8 +155,17 @@ async function auditState({ appUrl, cdp, consoleIssueCollector, sessionId, state
     },
     sessionId
   );
-  await cdp.send("Page.navigate", { url: appUrl }, sessionId);
-  await waitForWorkbench(cdp, sessionId);
+  await navigateToWorkbench({
+    appUrl,
+    cdp,
+    collectDiagnostics: () => collectWorkbenchDiagnostics(cdp, sessionId),
+    getConsoleIssues: () => consoleIssueCollector.collectSince(consoleIssueCursor),
+    sessionId,
+    state,
+    viewport,
+    wait,
+    waitForWorkbench
+  });
   await performStateSetup(cdp, sessionId, state.setup);
   await wait(180);
 
@@ -282,6 +292,14 @@ async function waitForWorkbench(cdp, sessionId) {
     return Boolean(ready);
   }, 12000);
   await wait(220);
+}
+
+async function collectWorkbenchDiagnostics(cdp, sessionId) {
+  return evaluate(
+    cdp,
+    sessionId,
+    "({ bodyText: document.body?.innerText?.slice(0, 240) ?? '', readyState: document.readyState, rootPresent: Boolean(document.querySelector('#root')), url: location.href, workbenchReady: Boolean(document.querySelector('.workbench-shell') && document.querySelector('.graph-panel')) })"
+  );
 }
 
 async function captureScreenshot(cdp, sessionId, viewport, state) {
@@ -1156,6 +1174,10 @@ function removeDirectory(path) {
   }
 }
 
+async function stopChrome() {
+  return stopProcess(chrome);
+}
+
 async function main() {
   try {
     viteServer = await createViteServer();
@@ -1249,11 +1271,11 @@ async function main() {
   } finally {
     consoleIssueCollector?.dispose();
     cdp?.close();
-    if (chrome && !chrome.killed) {
-      chrome.kill();
-    }
-    if (chromeUserDataDir) {
+    const chromeStopped = await stopChrome();
+    if (chromeUserDataDir && chromeStopped) {
       removeDirectory(chromeUserDataDir);
+    } else if (chromeUserDataDir) {
+      console.warn(`Chrome did not exit; temporary directory was preserved: ${chromeUserDataDir}`);
     }
     await viteServer?.close();
   }

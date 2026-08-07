@@ -1,6 +1,12 @@
+import { EventEmitter } from "node:events";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import {
+  navigateToWorkbench,
+  stopProcess,
+  WORKBENCH_NAVIGATION_ATTEMPTS
+} from "../scripts/layout-audit-runtime.mjs";
 
 const packageJson = JSON.parse(readFileSync(resolve(process.cwd(), "package.json"), "utf8"));
 const auditScriptPath = resolve(process.cwd(), "scripts/audit-layout.mjs");
@@ -64,6 +70,104 @@ describe("layout audit automation", () => {
     expect(script).toContain("consoleIssueCount");
     expect(script).toContain("allowedConsoleIssueCount");
     expect(script).toContain("unexpectedConsoleIssueCount");
+    expect(script).toContain("navigateToWorkbench");
+    expect(script).toContain("await stopChrome()");
+    expect(script).toContain("temporary directory was preserved");
+  });
+
+  it("retries Page.navigate error responses with state diagnostics", async () => {
+    const calls = [];
+    let appNavigationCount = 0;
+    const cdp = {
+      async send(method, params) {
+        calls.push([method, params]);
+        if (method === "Page.navigate" && params.url === "http://127.0.0.1:5173/") {
+          appNavigationCount += 1;
+          if (appNavigationCount === 1) {
+            return { errorText: "net::ERR_FAILED" };
+          }
+        }
+        return {};
+      }
+    };
+
+    await navigateToWorkbench({
+      appUrl: "http://127.0.0.1:5173/",
+      cdp,
+      collectDiagnostics: async () => ({
+        readyState: "complete",
+        rootPresent: true,
+        url: "http://127.0.0.1:5173/",
+        workbenchReady: false
+      }),
+      getConsoleIssues: () => [],
+      sessionId: "session",
+      state: { name: "insights-ai" },
+      viewport: { name: "tablet" },
+      wait: async () => undefined,
+      waitForWorkbench: async () => undefined
+    });
+
+    expect(WORKBENCH_NAVIGATION_ATTEMPTS).toBe(2);
+    expect(appNavigationCount).toBe(2);
+    expect(calls).toContainEqual(["Page.stopLoading", {}]);
+    expect(calls).toContainEqual(["Page.navigate", { url: "about:blank" }]);
+  });
+
+  it("does not retry a fully loaded app document that fails to render the workbench", async () => {
+    let appNavigationCount = 0;
+    const cdp = {
+      async send(method, params) {
+        if (method === "Page.navigate" && params.url === "http://127.0.0.1:5173/") {
+          appNavigationCount += 1;
+        }
+      }
+    };
+
+    await expect(
+      navigateToWorkbench({
+        appUrl: "http://127.0.0.1:5173/",
+        cdp,
+        collectDiagnostics: async () => ({
+          bodyText: "Application failed",
+          readyState: "complete",
+          rootPresent: true,
+          url: "http://127.0.0.1:5173/",
+          workbenchReady: false
+        }),
+        getConsoleIssues: () => [],
+        sessionId: "session",
+        state: { name: "insights-ai" },
+        viewport: { name: "tablet" },
+        wait: async () => undefined,
+        waitForWorkbench: async () => {
+          throw new Error("workbench missing");
+        }
+      })
+    ).rejects.toThrow(/viewport=tablet state=insights-ai.*workbench missing/);
+
+    expect(appNavigationCount).toBe(1);
+  });
+
+  it("forces Chrome to exit before allowing its profile directory to be removed", async () => {
+    const childProcess = new FakeChildProcess("SIGKILL");
+
+    await expect(
+      stopProcess(childProcess, { forceTimeoutMs: 20, gracefulTimeoutMs: 1 })
+    ).resolves.toBe(true);
+
+    expect(childProcess.signals).toEqual(["SIGTERM", "SIGKILL"]);
+    expect(childProcess.signalCode).toBe("SIGKILL");
+  });
+
+  it("reports when Chrome remains alive after forced termination", async () => {
+    const childProcess = new FakeChildProcess(null);
+
+    await expect(
+      stopProcess(childProcess, { forceTimeoutMs: 1, gracefulTimeoutMs: 1 })
+    ).resolves.toBe(false);
+
+    expect(childProcess.signals).toEqual(["SIGTERM", "SIGKILL"]);
   });
 
   it("exits after writing the layout audit report so CI cannot hang", () => {
@@ -116,3 +220,23 @@ describe("layout audit automation", () => {
     expect(script).toContain("buildWarningCount");
   });
 });
+
+class FakeChildProcess extends EventEmitter {
+  exitCode = null;
+  signalCode = null;
+  signals = [];
+
+  constructor(exitSignal) {
+    super();
+    this.exitSignal = exitSignal;
+  }
+
+  kill(signal = "SIGTERM") {
+    this.signals.push(signal);
+    if (signal === this.exitSignal) {
+      this.signalCode = signal;
+      queueMicrotask(() => this.emit("exit", null, signal));
+    }
+    return true;
+  }
+}
