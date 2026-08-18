@@ -1,4 +1,4 @@
-import { Bot, Command, Database, Moon, Network, Search, Share2, Sun, X } from "lucide-react";
+import { ArrowRight, Bot, Command, Database, ListChecks, Moon, Network, Search, Share2, Sun, Upload, X } from "lucide-react";
 import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import type { Ref } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -10,11 +10,21 @@ import { createRovingTabKeyDownHandler } from "./useRovingTabNavigation";
 import { formatGraphSummary, searchGraphNodes } from "./workbenchStats";
 
 export type WorkbenchModule = "graph" | "data" | "insights";
+export type WorkbenchNextStepAction = "import_data" | "inspect_graph" | "review_pending";
+
+export type WorkbenchNextStep = {
+  action: WorkbenchNextStepAction;
+  actionLabel: string;
+  description: string;
+  title: string;
+};
 
 type Props = {
   activeModule?: WorkbenchModule;
   graph: GraphResponse;
+  nextStep?: WorkbenchNextStep | null;
   onModuleChange?: (module: WorkbenchModule) => void;
+  onNextStep?: () => void;
   onOpenAISettings?: () => void;
   onOpenCommandPalette?: () => void;
   onOpenDataActions?: () => void;
@@ -36,7 +46,9 @@ export default function WorkbenchHeader({
   activeModule = "graph",
   commandPaletteButtonRef,
   graph,
+  nextStep = null,
   onModuleChange = () => undefined,
+  onNextStep = () => undefined,
   onOpenAISettings = () => undefined,
   onOpenCommandPalette = () => undefined,
   onOpenDataActions = () => undefined,
@@ -216,6 +228,34 @@ export default function WorkbenchHeader({
       </nav>
 
       <div className="workbench-header-actions">
+        {nextStep ? (
+          <section className="workbench-next-step" aria-label={t("workbench.nextStep.region")}>
+            <button
+              aria-describedby="workbench-next-step-tooltip"
+              aria-label={nextStep.title}
+              className="workbench-header-action workbench-next-step-hint"
+              type="button"
+            >
+              <WorkflowRecommendationIcon action={nextStep.action} />
+            </button>
+            <span
+              className="workbench-next-step-tooltip"
+              id="workbench-next-step-tooltip"
+              role="tooltip"
+            >
+              <strong>{nextStep.title}</strong>
+              <span>{nextStep.description}</span>
+            </span>
+            <button
+              className="workbench-next-step-action"
+              onClick={onNextStep}
+              type="button"
+            >
+              <span>{nextStep.actionLabel}</span>
+              <ArrowRight aria-hidden="true" size={14} />
+            </button>
+          </section>
+        ) : null}
         <button
           aria-label={t("command.open")}
           className="workbench-header-action"
@@ -360,4 +400,14 @@ export default function WorkbenchHeader({
       ) : null}
     </header>
   );
+}
+
+function WorkflowRecommendationIcon({ action }: { action: WorkbenchNextStepAction }) {
+  if (action === "review_pending") {
+    return <ListChecks aria-hidden="true" size={16} />;
+  }
+  if (action === "inspect_graph") {
+    return <Network aria-hidden="true" size={16} />;
+  }
+  return <Upload aria-hidden="true" size={16} />;
 }

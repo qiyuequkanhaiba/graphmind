@@ -1,4 +1,4 @@
-import { Bot, ChevronsRight, GitMerge, ListChecks, ShieldAlert } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, GitMerge, ListChecks, ShieldAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type {
   ChatMessage,
@@ -164,11 +164,12 @@ export default function InsightPanel({
       <aside className="insight-panel is-collapsed" aria-label={t("workbench.insights")}>
         <button
           aria-label={t("workbench.expandInsights")}
+          className="insight-expand-button"
           onClick={onToggleCollapsed}
           title={t("workbench.expandInsights")}
           type="button"
         >
-          <Bot aria-hidden="true" size={16} />
+          <ChevronsLeft aria-hidden="true" size={16} />
           <span>{t("workbench.insightRailLabel")}</span>
         </button>
       </aside>
@@ -228,7 +229,7 @@ export default function InsightPanel({
           />
         ) : null}
         {activeTab === "review" ? (
-          <>
+          <div className="insight-review-stack">
             {graphQualitySummary ? (
               <GraphQualityOperations
                 qualityFilter={qualityFilter}
@@ -256,7 +257,7 @@ export default function InsightPanel({
               onReview={onReview}
               suggestions={suggestions}
             />
-          </>
+          </div>
         ) : null}
         {activeTab === "ai" ? (
           <ChatPanel
@@ -320,13 +321,20 @@ function GraphQualityOperations({
   const coveragePercent = Math.round(summary.evidenceCoverageRatio * 100);
   const insight = buildQualityFilterInsight(qualityFilter, summary, t);
   const metrics = [
-    { label: t("quality.metric.isolatedNodes"), value: summary.isolatedNodes },
-    { label: t("quality.metric.weakEvidence"), value: summary.weakEvidenceRelationships },
-    { label: t("quality.metric.pendingReviews"), value: summary.pendingReviews },
-    { label: t("quality.metric.duplicateGroups"), value: summary.duplicateGroups },
-    { label: t("quality.metric.entityMatches"), value: summary.unresolvedEntityMatches },
-    { label: t("quality.metric.mappingReviews"), value: summary.unresolvedMappingReviews },
-    { label: t("quality.metric.evidenceCoverage"), value: `${coveragePercent}%` }
+    { detail: null, label: t("quality.metric.isolatedNodes"), value: summary.isolatedNodes },
+    { detail: null, label: t("quality.metric.weakEvidence"), value: summary.weakEvidenceRelationships },
+    { detail: null, label: t("quality.metric.pendingReviews"), value: summary.pendingReviews },
+    { detail: null, label: t("quality.metric.duplicateGroups"), value: summary.duplicateGroups },
+    { detail: null, label: t("quality.metric.entityMatches"), value: summary.unresolvedEntityMatches },
+    { detail: null, label: t("quality.metric.mappingReviews"), value: summary.unresolvedMappingReviews },
+    {
+      detail: t("quality.metric.evidenceCoverageDetail", {
+        covered: summary.evidenceCoveredRelationships,
+        total: summary.relationshipCount
+      }),
+      label: t("quality.metric.evidenceCoverage"),
+      value: `${coveragePercent}%`
+    }
   ];
 
   return (
@@ -353,15 +361,10 @@ function GraphQualityOperations({
           <div key={metric.label}>
             <dt>{metric.label}</dt>
             <dd>{metric.value}</dd>
+            {metric.detail ? <small>{metric.detail}</small> : null}
           </div>
         ))}
       </dl>
-      <p>
-        {t("quality.metric.evidenceCoverageDetail", {
-          covered: summary.evidenceCoveredRelationships,
-          total: summary.relationshipCount
-        })}
-      </p>
       <p className="graph-quality-filter-insight">{insight}</p>
       <QualityReviewShortcut
         onCleanupDuplicateRelationships={onCleanupDuplicateRelationships}

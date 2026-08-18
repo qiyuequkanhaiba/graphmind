@@ -23,6 +23,7 @@ dist/
 .superpowers/
 deploy/.env.production
 tmp-*
+artifacts/
 *.db
 *.duckdb
 *.sqlite

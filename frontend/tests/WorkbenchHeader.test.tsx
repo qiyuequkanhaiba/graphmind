@@ -67,6 +67,35 @@ const suggestions: RelationshipSuggestion[] = [
 ];
 
 describe("WorkbenchHeader", () => {
+  it("renders the next-step recommendation in the header action row", () => {
+    const onNextStep = vi.fn();
+    render(
+      <WorkbenchHeader
+        graph={graph}
+        nextStep={{
+          action: "review_pending",
+          actionLabel: "查看待确认关系",
+          description: "确认关键关系后，图谱和 AI 证据会更可靠。",
+          title: "先处理 7 条待确认关系"
+        }}
+        onNextStep={onNextStep}
+        onSelectNode={vi.fn()}
+        suggestions={suggestions}
+      />
+    );
+
+    const nextSteps = screen.getByRole("region", { name: "推荐下一步" });
+    const hint = within(nextSteps).getByRole("button", { name: "先处理 7 条待确认关系" });
+    const tooltip = within(nextSteps).getByRole("tooltip");
+
+    expect(hint).toHaveAttribute("aria-describedby", "workbench-next-step-tooltip");
+    expect(tooltip).toHaveTextContent("先处理 7 条待确认关系");
+    expect(tooltip).toHaveTextContent("确认关键关系后，图谱和 AI 证据会更可靠。");
+
+    fireEvent.click(within(nextSteps).getByRole("button", { name: "查看待确认关系" }));
+    expect(onNextStep).toHaveBeenCalledTimes(1);
+  });
+
   it("renders brand, graph summary, and search results", () => {
     const onSelectNode = vi.fn();
     render(<WorkbenchHeader graph={graph} suggestions={suggestions} onSelectNode={onSelectNode} />);

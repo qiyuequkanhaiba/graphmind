@@ -75,7 +75,7 @@ describe("professional graph styles", () => {
     expect(css).toContain("--gm-status-height: 28px;");
     expect(css).toContain(".pro-workbench .workbench-main {");
     expect(css).toContain("grid-template-columns: var(--gm-left-width) minmax(0, 1fr) var(--gm-right-width);");
-    expect(css).toContain("grid-template-columns: var(--gm-left-width) minmax(0, 1fr) var(--gm-collapsed-right-width);");
+    expect(css).toContain("grid-template-columns: var(--gm-left-width) minmax(0, 1fr);");
     expect(css).toContain("@media (max-width: 1080px)");
     expect(css).toContain(".pro-workbench .graph-toolbar {");
     expect(css).toContain("position: static;");
@@ -148,9 +148,9 @@ describe("professional graph styles", () => {
     expect(css).toContain("--gm-left-width: clamp(228px, 17vw, 292px);");
     expect(css).toContain("--gm-right-width: clamp(286px, 22vw, 360px);");
     expect(css).toContain("grid-template-columns: var(--gm-left-width) minmax(0, 1fr) var(--gm-right-width);");
-    expect(css).toContain("grid-template-rows: var(--gm-header-height) auto auto minmax(0, 1fr) var(--gm-status-height);");
-    expect(css).toContain("grid-template-rows: auto auto auto minmax(0, 1fr) var(--gm-status-height);");
-    expect(css).toContain("grid-template-rows: auto auto auto minmax(0, 1fr) 30px;");
+    expect(css).toContain("grid-template-rows: var(--gm-header-height) minmax(0, 1fr) var(--gm-status-height);");
+    expect(css).toContain("grid-template-rows: auto minmax(0, 1fr) var(--gm-status-height);");
+    expect(css).toContain("grid-template-rows: auto minmax(0, 1fr) 30px;");
     expect(css).toContain(".pro-workbench .workbench-next-step {");
     expect(css).toContain(".pro-workbench .graph-panel {");
     expect(css).toContain("display: grid;");
@@ -241,8 +241,11 @@ describe("professional graph styles", () => {
     expect(css).toContain(".pro-workbench.is-right-collapsed .workbench-main {");
     expect(css).toContain(".pro-workbench.is-graph-focus .workbench-main {");
     expect(css).toContain(".pro-workbench .insight-panel {");
+    expect(css).toContain(".pro-workbench .data-explorer-panel.is-collapsed,");
     expect(css).toContain(".pro-workbench .insight-panel.is-collapsed {");
-    expect(css).toContain("place-items: start center;");
+    expect(css).toContain("position: absolute;");
+    expect(css).toContain(".pro-workbench .data-expand-button,");
+    expect(css).toContain(".pro-workbench .insight-expand-button {");
     expect(css).toContain(".pro-workbench .insight-panel.is-collapsed button {");
     expect(css).toContain("grid-column: 1 / -1;");
     expect(css).toContain("@media (max-height: 820px) and (min-width: 1081px)");
@@ -366,7 +369,7 @@ describe("professional graph styles", () => {
     expect(css).toContain("grid-template-columns: minmax(170px, 0.62fr) minmax(248px, 0.8fr) auto;");
     expect(css).toContain("grid-column: 3;");
     expect(css).toContain("@media (max-width: 1080px)");
-    expect(css).toContain("grid-template-rows: auto auto auto minmax(0, 1fr) var(--gm-status-height);");
+    expect(css).toContain("grid-template-rows: auto minmax(0, 1fr) var(--gm-status-height);");
     expect(css).toContain("grid-template-columns: minmax(0, 1fr) auto;");
     expect(css).toContain("grid-template-rows: auto auto;");
     expect(css).toContain("min-height: 96px;");
@@ -387,8 +390,8 @@ describe("professional graph styles", () => {
     expect(css).toContain(".pro-workbench .language-switcher {");
     expect(css).toContain("display: none;");
     expect(css).toContain("grid-template-columns: minmax(0, 1fr) auto;");
-    expect(css).toContain("grid-template-columns: repeat(5, 34px);");
-    expect(css).toContain("padding-right: 188px;");
+    expect(css).toContain(".pro-workbench .workbench-next-step-tooltip");
+    expect(css).toContain("padding-right: 0;");
     expect(css).toContain(".pro-workbench .graph-canvas {\n    height: 100%;\n    min-height: 210px;");
     expect(css).toContain(".command-palette-backdrop {");
     expect(css).toContain(".command-palette {");

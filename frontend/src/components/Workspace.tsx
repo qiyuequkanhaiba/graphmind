@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { ArrowRight, ListChecks, Network, Upload, X } from "lucide-react";
+import { X } from "lucide-react";
 import type {
   ChatMessage,
   ChatSelectionContext,
@@ -1079,7 +1079,9 @@ export default function Workspace({
         activeModule={activeModule}
         commandPaletteButtonRef={commandPaletteButtonRef}
         graph={graph}
+        nextStep={workflowRecommendation}
         onModuleChange={changeModule}
+        onNextStep={runWorkflowRecommendation}
         onOpenAISettings={openAiSettings}
         onOpenCommandPalette={() => setCommandPaletteOpen(true)}
         onOpenDataActions={() => setDataActionsOpen(true)}
@@ -1092,19 +1094,6 @@ export default function Workspace({
       <div className="workbench-module-context" aria-live="polite">
         {reviewShortcutAnnouncement ?? moduleContextLabel(activeModule)}
       </div>
-      <section className="workbench-next-step" aria-label={t("workbench.nextStep.region")}>
-        <div className="workbench-next-step-icon" aria-hidden="true">
-          <WorkflowRecommendationIcon action={workflowRecommendation.action} />
-        </div>
-        <div>
-          <strong>{workflowRecommendation.title}</strong>
-          <span>{workflowRecommendation.description}</span>
-        </div>
-        <button onClick={runWorkflowRecommendation} type="button">
-          <span>{workflowRecommendation.actionLabel}</span>
-          <ArrowRight aria-hidden="true" size={14} />
-        </button>
-      </section>
       <div className="workbench-main">
         <DataExplorerPanel
           collapsed={leftPanelCollapsed}
@@ -1413,18 +1402,6 @@ function useMediaQuery(query: string): boolean {
   return matches;
 }
 
-type WorkflowRecommendationAction = "import_data" | "review_pending" | "inspect_graph";
-
-function WorkflowRecommendationIcon({ action }: { action: WorkflowRecommendationAction }) {
-  if (action === "review_pending") {
-    return <ListChecks size={15} />;
-  }
-  if (action === "inspect_graph") {
-    return <Network size={15} />;
-  }
-  return <Upload size={15} />;
-}
-
 function buildWorkflowRecommendation({
   graphEdgeCount,
   graphNodeCount,
@@ -1436,7 +1413,7 @@ function buildWorkflowRecommendation({
   pendingSuggestionCount: number;
   t: ReturnType<typeof useI18n>["t"];
 }): {
-  action: WorkflowRecommendationAction;
+  action: "import_data" | "inspect_graph" | "review_pending";
   actionLabel: string;
   description: string;
   title: string;

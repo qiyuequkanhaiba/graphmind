@@ -1,4 +1,4 @@
-import { ChevronsLeft, Database, TableProperties } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, Database } from "lucide-react";
 import { Children, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type {
   DocumentChunk,
@@ -193,8 +193,14 @@ export default function DataExplorerPanel({
   if (collapsed) {
     return (
       <aside className="data-explorer-panel pro-tree-panel is-collapsed" aria-label={t("data.heading")}>
-        <button aria-label={t("data.expandTree")} onClick={onToggleCollapsed} title={t("data.expandTree")} type="button">
-          <TableProperties aria-hidden="true" size={16} />
+        <button
+          aria-label={t("data.expandTree")}
+          className="data-expand-button"
+          onClick={onToggleCollapsed}
+          title={t("data.expandTree")}
+          type="button"
+        >
+          <ChevronsRight aria-hidden="true" size={16} />
           <span>{t("data.railLabel")}</span>
         </button>
       </aside>

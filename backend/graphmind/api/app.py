@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import time
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -7,6 +8,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from graphmind.api.auth import authenticate_request
@@ -158,7 +160,28 @@ def create_app(workspace_root: Path | None = None) -> FastAPI:
             workspace_paths=paths,
         )
     )
+    mount_static_ui(app)
     return app
+
+
+def resolve_static_ui_dir() -> Path | None:
+    configured = os.environ.get("GRAPHMIND_STATIC_DIR", "").strip()
+    if not configured:
+        return None
+    static_dir = Path(configured).expanduser()
+    if not static_dir.is_dir() or not (static_dir / "index.html").is_file():
+        raise RuntimeError(
+            "GRAPHMIND_STATIC_DIR must point to a built UI directory containing index.html: "
+            f"{static_dir}"
+        )
+    return static_dir
+
+
+def mount_static_ui(app: FastAPI) -> None:
+    static_dir = resolve_static_ui_dir()
+    if static_dir is None:
+        return
+    app.mount("/", StaticFiles(directory=static_dir, html=True), name="ui")
 
 
 app = create_app()

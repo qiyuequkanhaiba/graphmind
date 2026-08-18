@@ -42,9 +42,9 @@ describe("mobile layout containment CSS", () => {
 
   it("pins the productized workbench chrome to fixed grid rows", () => {
     expect(css).toMatch(/\.pro-workbench \.workbench-header \{[^}]*grid-row: 1;/s);
-    expect(css).toMatch(/\.pro-workbench \.workbench-next-step \{[^}]*grid-row: 3;/s);
-    expect(css).toMatch(/\.pro-workbench \.workbench-main \{[^}]*grid-row: 4;/s);
-    expect(css).toMatch(/\.pro-workbench \.workbench-status-bar \{[^}]*grid-row: 5;/s);
+    expect(css).toContain(".pro-workbench .workbench-next-step-hint:hover + .workbench-next-step-tooltip");
+    expect(css).toMatch(/\.pro-workbench \.workbench-main \{[^}]*grid-row: 2;/s);
+    expect(css).toMatch(/\.pro-workbench \.workbench-status-bar \{[^}]*grid-row: 3;/s);
   });
 
   it("uses a compact mobile chat form so AI messages keep usable height", () => {
