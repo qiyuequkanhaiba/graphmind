@@ -22,6 +22,9 @@ rsync -a \
   --exclude '.venv' \
   --exclude '__pycache__' \
   --exclude '*.pyc' \
+  --exclude '.coverage' \
+  --exclude 'coverage.xml' \
+  --exclude 'htmlcov' \
   --exclude '.pytest_cache' \
   --exclude '.ruff_cache' \
   --exclude '*.egg-info' \
