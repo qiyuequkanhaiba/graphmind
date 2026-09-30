@@ -41,9 +41,13 @@ describe("P11 professional engineering gates", () => {
     }
   });
 
+  // This gate shells out to the backend Python exporter, which cold-imports the
+  // whole FastAPI application. On CI that routinely lands close to vitest's
+  // default 5000ms test timeout and produced intermittent failures unrelated to
+  // any code change, so give this single subprocess-backed case a wider budget.
   it("runs the OpenAPI contract export gate", () => {
     const result = runScript(["scripts/contract-api.mjs"]);
     expect(result.status).toBe(0);
     expect(`${result.stdout}${result.stderr}`).toContain("OpenAPI contract check passed");
-  });
+  }, 30000);
 });
