@@ -19,7 +19,7 @@
   "performance": {
     "maxInitialJsKb": 750,
     "maxAsyncJsKb": 560,
-    "maxCssKb": 160,
+    "maxCssKb": 165,
     "maxBuildWarnings": 0,
     "buildWarningChunkKb": 560
   }

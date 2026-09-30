@@ -256,24 +256,11 @@ textarea {
   min-width: 0;
 }
 
-.workspace-grid {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: 260px minmax(420px, 1fr) 320px;
-}
-
 .panel {
   background: #ffffff;
   border-right: 1px solid #d7dde7;
   padding: 16px;
   min-width: 0;
-}
-
-.review-panel {
-  border-right: 0;
-  border-left: 1px solid #d7dde7;
-  overflow: auto;
 }
 
 .panel h2,
@@ -305,7 +292,6 @@ textarea {
 
 .upload-box small,
 .profile-summary-empty p,
-.review-panel p,
 .relationship-review p {
   color: #607088;
   line-height: 1.45;
@@ -1118,11 +1104,6 @@ textarea {
 
 .field-pair span {
   color: #607088;
-}
-
-.ai-explanation {
-  padding-left: 8px;
-  border-left: 2px solid #9fb2d1;
 }
 
 .review-actions button {
@@ -2599,13 +2580,6 @@ textarea {
   border-bottom: 1px solid #d7dde7;
 }
 
-.filter-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.filter-group label,
 .confidence-filter {
   display: inline-flex;
   align-items: center;
@@ -3555,16 +3529,6 @@ textarea {
 }
 
 @media (max-width: 1100px) {
-  .workspace-grid {
-    grid-template-columns: 240px minmax(360px, 1fr);
-  }
-
-  .review-panel {
-    grid-column: 1 / -1;
-    border-left: 0;
-    border-top: 1px solid #d7dde7;
-  }
-
   .graph-toolbar {
     grid-template-columns: 1fr;
   }
@@ -4023,39 +3987,6 @@ textarea {
   padding: 5px 8px;
   font-size: 12px;
   cursor: pointer;
-}
-
-.explorer-summary {
-  display: grid;
-  gap: 10px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid #d7dde7;
-}
-
-.explorer-summary h3 {
-  margin: 0;
-  font-size: 13px;
-}
-
-.explorer-summary dl {
-  display: grid;
-  gap: 7px;
-  margin: 0;
-}
-
-.explorer-summary div {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  color: #607088;
-  font-size: 12px;
-}
-
-.explorer-summary dd {
-  margin: 0;
-  color: #172033;
-  font-weight: 760;
 }
 
 .insight-panel {
@@ -6379,7 +6310,6 @@ button.tree-row:hover {
   white-space: nowrap;
 }
 
-.pro-workbench .filter-group label,
 .pro-workbench .confidence-filter {
   color: var(--gm-muted);
 }
@@ -8730,7 +8660,6 @@ button.tree-row:hover {
   }
 
   .pro-workbench .graph-toolbar-actions,
-  .pro-workbench .filter-group,
   .pro-workbench .confidence-filter {
     justify-content: flex-start;
   }

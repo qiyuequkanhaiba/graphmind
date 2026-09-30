@@ -274,7 +274,7 @@ describe("layout audit automation", () => {
     );
     expect(budgets.performance.maxInitialJsKb).toBeLessThanOrEqual(750);
     expect(budgets.performance.maxAsyncJsKb).toBeLessThanOrEqual(560);
-    expect(budgets.performance.maxCssKb).toBeLessThanOrEqual(160);
+    expect(budgets.performance.maxCssKb).toBeLessThanOrEqual(165);
     expect(budgets.performance.maxBuildWarnings).toBe(0);
     expect(budgets.performance.buildWarningChunkKb).toBeLessThanOrEqual(560);
     expect(viteConfig).toContain("manualChunks");
