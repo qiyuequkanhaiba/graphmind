@@ -22,6 +22,7 @@ node_modules/
 dist/
 .graphmind/
 .superpowers/
+.workbuddy-ai/
 workspace/
 deploy/.env.production
 tmp-*
