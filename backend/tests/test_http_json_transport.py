@@ -101,3 +101,44 @@ def test_post_json_rejects_redirects_and_oversized_responses(monkeypatch, respon
 
     with pytest.raises(ValueError, match=message):
         http_json_transport.post_json("http://api.example.com/v1", {}, {}, 5)
+
+
+def test_dev_private_endpoint_opt_in_allows_private_dns_result(monkeypatch):
+    """开发模式 + GRAPHMIND_AI_DEV_ALLOW_PRIVATE_ENDPOINT=1 时放行内网解析结果。
+
+    用于透明代理 / NAT / 沙箱把公网域名解析到内网地址的场景；生产环境保持严格校验。
+    """
+    _FakeConnection.instances.clear()
+    _FakeConnection.response = _FakeResponse(b'{"ok": true}')
+    monkeypatch.setattr(
+        http_json_transport.socket,
+        "getaddrinfo",
+        lambda *_args, **_kwargs: [(2, 1, 6, "", ("198.18.0.16", 0))],
+    )
+    monkeypatch.setattr(http_json_transport.http.client, "HTTPConnection", _FakeConnection)
+    monkeypatch.delenv("GRAPHMIND_DEPLOYMENT_MODE", raising=False)
+    monkeypatch.setenv("GRAPHMIND_AI_DEV_ALLOW_PRIVATE_ENDPOINT", "1")
+
+    result = http_json_transport.post_json(
+        "http://api.example.com/v1/chat/completions",
+        {"model": "test"},
+        {"Authorization": "Bearer secret"},
+        10,
+    )
+
+    assert result == {"ok": True}
+
+
+def test_production_ignores_dev_private_endpoint_opt_in(monkeypatch):
+    """生产模式即使设置开关也不放行内网地址。"""
+    monkeypatch.setattr(
+        http_json_transport.socket,
+        "getaddrinfo",
+        lambda *_args, **_kwargs: [(2, 1, 6, "", ("198.18.0.16", 0))],
+    )
+    monkeypatch.setenv("GRAPHMIND_DEPLOYMENT_MODE", "production")
+    monkeypatch.setenv("GRAPHMIND_AI_PROVIDER_ALLOWLIST", "api.example.com")
+    monkeypatch.setenv("GRAPHMIND_AI_DEV_ALLOW_PRIVATE_ENDPOINT", "1")
+
+    with pytest.raises(ValueError, match="blocked network address"):
+        http_json_transport.post_json("https://api.example.com/v1", {}, {}, 5)

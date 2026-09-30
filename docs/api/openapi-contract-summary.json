@@ -27,6 +27,11 @@
             "default": 0.1,
             "title": "Temperature",
             "type": "number"
+          },
+          "timeout": {
+            "default": 90,
+            "title": "Timeout",
+            "type": "integer"
           }
         },
         "title": "AIChatSettings",

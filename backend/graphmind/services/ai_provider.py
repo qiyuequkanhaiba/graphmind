@@ -21,7 +21,9 @@ class AIProviderResult:
 
 
 class OpenAICompatibleChatProvider:
-    def __init__(self, transport: Transport | None = None, timeout: int = 20) -> None:
+    # Atria 等大上下文模型生成长答案可能超过 20 秒，默认放宽到 90 秒，
+    # 并允许项目设置通过 ai.chat.timeout 覆盖。
+    def __init__(self, transport: Transport | None = None, timeout: int = 90) -> None:
         self.transport = transport or post_json
         self.timeout = timeout
 
@@ -57,11 +59,12 @@ class OpenAICompatibleChatProvider:
             api_key = runtime_provider_api_key(settings, "GRAPHMIND_AI_CHAT_API_KEY")
             if api_key:
                 headers["Authorization"] = f"Bearer {api_key}"
+            effective_timeout = int(settings.get("timeout") or self.timeout)
             response = self.transport(
                 provider_url,
                 payload,
                 headers,
-                self.timeout,
+                effective_timeout,
             )
         except Exception:
             return AIProviderResult(

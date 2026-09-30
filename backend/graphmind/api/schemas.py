@@ -69,6 +69,7 @@ class AIChatSettings(BaseModel):
     base_url: str = ""
     api_key: str = ""
     temperature: float = 0.1
+    timeout: int = 90
 
     @field_validator("base_url")
     @classmethod

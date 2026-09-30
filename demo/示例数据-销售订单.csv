@@ -1,0 +1,31 @@
+order_id,order_date,customer_name,customer_level,sales_channel,product_category,product_name,quantity,unit_price,amount,sales_rep,province,payment_status
+SO-2026-0001,2026-01-08,Mistral Tech Co Ltd,Key Account,Online Store,Office Equipment,Ergonomic Chair,12,890.00,10680.00,Zhang Wei,Guangdong,Paid
+SO-2026-0002,2026-01-11,Mistral Tech Co Ltd,Key Account,Retail Store,Office Equipment,Standing Desk,6,1680.00,10080.00,Zhang Wei,Guangdong,Paid
+SO-2026-0003,2026-01-15,Phoenix Trading Inc,Standard,Online Store,Office Supplies,A4 Paper,80,135.00,10800.00,Li Na,Zhejiang,Paid
+SO-2026-0004,2026-01-19,Phoenix Trading Inc,Standard,Telesales,Office Supplies,Gel Pen,300,2.50,750.00,Li Na,Zhejiang,Paid
+SO-2026-0005,2026-02-03,Grandview Construction Group,Strategic,Tender,Construction Material,Fireproof Cable,40,2600.00,104000.00,Wang Qiang,Jiangsu,Partial
+SO-2026-0006,2026-02-07,Grandview Construction Group,Strategic,Tender,Construction Material,High Strength Cement,120,420.00,50400.00,Wang Qiang,Jiangsu,Paid
+SO-2026-0007,2026-02-14,Mistral Tech Co Ltd,Key Account,Online Store,IT Equipment,Business Laptop,8,6200.00,49600.00,Zhang Wei,Guangdong,Paid
+SO-2026-0008,2026-02-18,Nova Media Studio,Standard,Online Store,IT Equipment,4K Monitor,10,2350.00,23500.00,Zhao Min,Beijing,Paid
+SO-2026-0009,2026-02-22,Nova Media Studio,Standard,Retail Store,Office Equipment,Softbox Light,15,680.00,10200.00,Zhao Min,Beijing,Overdue
+SO-2026-0010,2026-03-05,Harvest Catering Co Ltd,Key Account,Telesales,Kitchen Equipment,Commercial Fridge,9,4800.00,43200.00,Li Na,Sichuan,Paid
+SO-2026-0011,2026-03-09,Harvest Catering Co Ltd,Key Account,Retail Store,Kitchen Equipment,Sterilizer Cabinet,12,1580.00,18960.00,Li Na,Sichuan,Partial
+SO-2026-0012,2026-03-13,Grandview Construction Group,Strategic,Tender,Construction Material,Fireproof Cable,25,2600.00,65000.00,Wang Qiang,Jiangsu,Paid
+SO-2026-0013,2026-03-17,Mistral Tech Co Ltd,Key Account,Online Store,Office Supplies,A4 Paper,50,135.00,6750.00,Zhang Wei,Guangdong,Paid
+SO-2026-0014,2026-03-21,Ocean Logistics Corp,Strategic,Retail Store,Logistics Equipment,Electric Forklift,5,16800.00,84000.00,Zhao Min,Shanghai,Paid
+SO-2026-0015,2026-03-25,Ocean Logistics Corp,Strategic,Telesales,Logistics Equipment,Logistics Tote,200,85.00,17000.00,Zhao Min,Shanghai,Partial
+SO-2026-0016,2026-04-02,Phoenix Trading Inc,Standard,Online Store,IT Equipment,Laser Printer,7,3180.00,22260.00,Li Na,Zhejiang,Paid
+SO-2026-0017,2026-04-06,Nova Media Studio,Standard,Online Store,IT Equipment,Graphics Workstation,4,9800.00,39200.00,Zhao Min,Beijing,Paid
+SO-2026-0018,2026-04-10,Harvest Catering Co Ltd,Key Account,Telesales,Kitchen Equipment,Dishwasher,6,7600.00,45600.00,Li Na,Sichuan,Overdue
+SO-2026-0019,2026-04-15,Grandview Construction Group,Strategic,Tender,Construction Material,High Strength Cement,80,420.00,33600.00,Wang Qiang,Jiangsu,Paid
+SO-2026-0020,2026-04-19,Ocean Logistics Corp,Strategic,Retail Store,Logistics Equipment,Electric Forklift,3,16800.00,50400.00,Zhao Min,Shanghai,Paid
+SO-2026-0021,2026-04-23,Mistral Tech Co Ltd,Key Account,Retail Store,IT Equipment,Business Laptop,5,6200.00,31000.00,Zhang Wei,Guangdong,Partial
+SO-2026-0022,2026-05-02,Nova Media Studio,Standard,Online Store,Office Equipment,Ergonomic Chair,18,890.00,16020.00,Zhao Min,Beijing,Paid
+SO-2026-0023,2026-05-06,Phoenix Trading Inc,Standard,Online Store,Office Supplies,Gel Pen,500,2.50,1250.00,Li Na,Zhejiang,Paid
+SO-2026-0024,2026-05-10,Harvest Catering Co Ltd,Key Account,Telesales,Kitchen Equipment,Ice Machine,4,6200.00,24800.00,Li Na,Sichuan,Paid
+SO-2026-0025,2026-05-15,Ocean Logistics Corp,Strategic,Tender,Logistics Equipment,Sorting Line,2,126000.00,252000.00,Zhao Min,Shanghai,Partial
+SO-2026-0026,2026-05-19,Grandview Construction Group,Strategic,Retail Store,Construction Material,Waterproof Membrane,60,540.00,32400.00,Wang Qiang,Jiangsu,Paid
+SO-2026-0027,2026-05-23,Mistral Tech Co Ltd,Key Account,Online Store,Office Equipment,Standing Desk,4,1680.00,6720.00,Zhang Wei,Guangdong,Paid
+SO-2026-0028,2026-05-27,Nova Media Studio,Standard,Online Store,IT Equipment,4K Monitor,6,2350.00,14100.00,Zhao Min,Beijing,Paid
+SO-2026-0029,2026-06-01,Phoenix Trading Inc,Standard,Telesales,IT Equipment,Laser Printer,3,3180.00,9540.00,Li Na,Zhejiang,Overdue
+SO-2026-0030,2026-06-05,Harvest Catering Co Ltd,Key Account,Online Store,Kitchen Equipment,Commercial Fridge,5,4800.00,24000.00,Li Na,Sichuan,Paid

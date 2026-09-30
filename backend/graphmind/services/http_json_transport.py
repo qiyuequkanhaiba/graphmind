@@ -3,11 +3,15 @@ from __future__ import annotations
 import http.client
 import ipaddress
 import json
+import os
 import socket
 from typing import Any
 from urllib.parse import urlparse, urlunsplit
 
-from graphmind.services.provider_policy import validate_runtime_provider_endpoint
+from graphmind.services.provider_policy import (
+    is_runtime_production,
+    validate_runtime_provider_endpoint,
+)
 
 MAX_JSON_RESPONSE_BYTES = 2 * 1024 * 1024
 
@@ -94,6 +98,8 @@ def _public_addresses(
 
 
 def _is_blocked_address(address: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
+    if _dev_private_endpoints_allowed():
+        return False
     return (
         address.is_loopback
         or address.is_private
@@ -102,3 +108,19 @@ def _is_blocked_address(address: ipaddress.IPv4Address | ipaddress.IPv6Address) 
         or address.is_reserved
         or address.is_unspecified
     )
+
+
+def _dev_private_endpoints_allowed() -> bool:
+    """开发环境下允许通过内网/透明代理访问 AI 端点。
+
+    生产环境一律保持严格校验；仅在非生产模式且显式设置
+    GRAPHMIND_AI_DEV_ALLOW_PRIVATE_ENDPOINT=1 时放行（用于 NAT、透明代理、
+    或者 ISP/沙箱把公网域名解析到内网地址的调试场景）。
+    """
+    if is_runtime_production():
+        return False
+    return os.environ.get("GRAPHMIND_AI_DEV_ALLOW_PRIVATE_ENDPOINT", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }

@@ -1,0 +1,24 @@
+{
+  "schema": "graphmind.project-preset.v1",
+  "exportedAt": "2026-09-30T16:30:00.000Z",
+  "settings": {
+    "ai": {
+      "chat": {
+        "baseUrl": "https://discovery-api.intern-ai.org.cn/v1",
+        "model": "Atria-Dawn-Preview",
+        "provider": "openai-compatible",
+        "temperature": 0.2
+      },
+      "vector": {
+        "baseUrl": "",
+        "dimensions": 0,
+        "model": "",
+        "provider": "none"
+      }
+    },
+    "reviewAnalytics": {
+      "autoCleanupEnabled": false,
+      "retentionDays": 30
+    }
+  }
+}

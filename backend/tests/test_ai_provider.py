@@ -95,7 +95,34 @@ def test_provider_posts_to_chat_completions_endpoint_and_returns_content():
     assert calls[0][0] == "https://api.example.com/v1/chat/completions"
     assert calls[0][1]["model"] == "gpt-4.1-mini"
     assert calls[0][2]["Authorization"] == "Bearer sk-test"
-    assert calls[0][3] == 20
+    assert calls[0][3] == 90  # 默认超时随 AIChatSettings.timeout 放宽到 90 秒
+
+
+def test_provider_honors_settings_timeout_override():
+    calls = []
+
+    def fake_transport(url, payload, headers, timeout):
+        calls.append((url, payload, headers, timeout))
+        return {"choices": [{"message": {"content": "增强回答"}}]}
+
+    provider = OpenAICompatibleChatProvider(transport=fake_transport)
+
+    result = provider.generate(
+        settings={
+            "provider": "openai-compatible",
+            "model": "Atria-Dawn-Preview",
+            "base_url": "https://api.example.com/v1",
+            "api_key": "sk-test",
+            "temperature": 0.2,
+            "timeout": 150,
+        },
+        question="示例问题",
+        rule_answer="规则答案",
+        citations=[],
+    )
+
+    assert result.content == "增强回答"
+    assert calls[0][3] == 150
 
 
 def test_provider_uses_environment_key_and_stops_after_allowlist_revocation(monkeypatch):

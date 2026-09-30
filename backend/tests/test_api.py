@@ -231,6 +231,7 @@ def test_project_settings_return_ai_vector_and_review_analytics_defaults(tmp_wor
                 "base_url": "",
                 "api_key": "",
                 "temperature": 0.1,
+                    "timeout": 90,
             },
             "vector": {
                 "provider": "none",
@@ -326,6 +327,7 @@ def test_project_settings_normalizes_review_analytics_retention(tmp_workspace):
                     "base_url": "",
                     "api_key": "",
                     "temperature": 0.1,
+                    "timeout": 90,
                 },
                 "vector": {
                     "provider": "none",
@@ -604,6 +606,7 @@ def test_project_settings_return_404_for_missing_project(tmp_workspace):
                     "base_url": "",
                     "api_key": "",
                     "temperature": 0.1,
+                    "timeout": 90,
                 },
                 "vector": {
                     "provider": "none",
