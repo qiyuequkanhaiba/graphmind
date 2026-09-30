@@ -435,7 +435,10 @@ jobs:
       - name: Parse CI configuration and verify Docker image pins
         working-directory: .
         run: |
-          ruby -e 'require "yaml"; YAML.safe_load(File.read(ARGV.fetch(0)), aliases: true); puts "workflow YAML parsed"' .github/workflows/productization-gates.yml
+          for workflow in .github/workflows/*.yml
+          do
+            ruby -e 'require "yaml"; YAML.safe_load(File.read(ARGV.fetch(0)), aliases: true); puts "#{ARGV.fetch(0)}: workflow YAML parsed"' "$workflow"
+          done
           for dockerfile in deploy/backend.Dockerfile deploy/frontend.Dockerfile; do
             awk '
               /^[[:space:]]*FROM[[:space:]]/ {
