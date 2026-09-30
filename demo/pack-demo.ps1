@@ -55,7 +55,7 @@ Remove-Item $Staging -Recurse -Force
 
 Write-Host "已生成: $ZipPath" -ForegroundColor Green
 Write-Host ""
-Write-Host "邮件主题：[Atria Demo共建] $WorkName - $Author" -ForegroundColor Yellow
-Write-Host "收件人  ：atria_ai@163.com" -ForegroundColor Yellow
-Write-Host "附件    ：$ZipName" -ForegroundColor Yellow
-Write-Host "正文    ：填写 GitHub 仓库链接（源码不在压缩包内）" -ForegroundColor Yellow
+Write-Host "收件人      : atria_ai@163.com" -ForegroundColor Yellow
+Write-Host "附件        : $ZipName" -ForegroundColor Yellow
+Write-Host "邮件主题/正文: 见 demo\邮件模板.md" -ForegroundColor Yellow
+Write-Host "正文必含    : GitHub 仓库链接（源码不在压缩包内）" -ForegroundColor Yellow
