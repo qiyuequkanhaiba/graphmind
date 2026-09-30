@@ -150,7 +150,7 @@ powershell -ExecutionPolicy Bypass -File demo\push-to-github.ps1 `
 
 脚本自动用本机已下载的**便携版 Git 2.55**（`G:\work\Atria\tools\PortableGit`，
 含凭据管理器，首次推送时浏览器弹出 GitHub 授权页），会 clone 你的仓库到
-`G:\work\Atria\graphmind-repo`（保留原仓库历史），同步本次 Atria 集成的 14 个文件，
+`G:\work\Atria\graphmind-repo`（保留原仓库历史），同步本次 Atria 集成的 16 个文件，
 提交并推送。
 
 也可以手动分步：
@@ -159,7 +159,7 @@ powershell -ExecutionPolicy Bypass -File demo\push-to-github.ps1 `
 # 1) clone 你的仓库到本地（如 G:\work\Atria\graphmind-repo）
 git clone https://github.com/你的用户名/graphmind.git G:\work\Atria\graphmind-repo
 
-# 2) 用同步脚本精确覆盖 14 个改动文件（不影响仓库其它文件）
+# 2) 用同步脚本精确覆盖 16 个改动文件（不影响仓库其它文件）
 powershell -ExecutionPolicy Bypass -File demo\sync-to-repo.ps1 -TargetRepo "G:\work\Atria\graphmind-repo"
 
 # 3) 提交并推送
